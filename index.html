@@ -1,0 +1,3357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asignación de Tribunales TFG · Universidad Villanueva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  /* Colores Universidad Villanueva */
+  --azul:        #002147;   /* Azul marino UV — color principal institucional */
+  --azul-medio:  #004B8D;   /* Azul medio UV */
+  --azul-claro:  #4a8fcc;   /* Azul claro */
+  --azul-palido: #e8f0f8;   /* Fondo muy claro */
+  --dorado:      #B8972E;   /* Dorado UV — acento */
+  --dorado-claro:#f0dea0;
+  --blanco:      #ffffff;
+  --gris-claro:  #f4f6f9;
+  --gris:        #8a9ab0;
+  --texto:       #1a2535;
+  --rojo:        #c0392b;
+  --naranja:     #e67e22;
+  --verde:       #1a7a4a;
+  --sombra:      0 4px 24px rgba(0,33,71,0.10);
+  --sombra-hover:0 8px 32px rgba(0,33,71,0.18);
+  --radio: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gris-claro);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--azul);
+  color: #fff;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 32px;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+.logo-svg {
+  height: 46px;
+  width: auto;
+  max-width: 180px;
+  flex-shrink: 0;
+  display: block;
+}
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.logo-text .uni { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+.logo-text .sub { font-size: 0.72rem; color: var(--dorado-claro); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; margin-top:2px; }
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #e8f2fa;
+  letter-spacing: 0.01em;
+}
+.header-actions { display:flex; gap:10px; }
+.btn-header {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.btn-header:hover { background: rgba(255,255,255,0.20); border-color: rgba(255,255,255,0.4); }
+.btn-header.gold { background: var(--dorado); border-color: var(--dorado); color: var(--azul); font-weight: 600; }
+.btn-header.gold:hover { background: var(--dorado-claro); }
+
+/* ── NAV TABS ── */
+nav.tabs {
+  background: var(--azul);
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+.tabs-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  padding: 0 32px;
+  gap: 4px;
+}
+.tab {
+  padding: 12px 22px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  user-select: none;
+}
+.tab:hover { color: #fff; }
+.tab.active { color: var(--dorado-claro); border-bottom-color: var(--dorado); }
+
+/* ── LAYOUT ── */
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px;
+}
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--blanco);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--azul-palido);
+}
+.card-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--azul);
+  font-weight: 600;
+}
+.card-icon {
+  width: 36px; height: 36px;
+  background: var(--azul-palido);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+@media(max-width:900px) { .grid-2,.grid-3 { grid-template-columns:1fr; } }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; border: none; transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--azul-medio); color: #fff; }
+.btn-primary:hover { background: var(--azul); box-shadow: var(--sombra-hover); transform: translateY(-1px); }
+.btn-secondary { background: var(--gris-claro); color: var(--azul); border: 1.5px solid #d0dde8; }
+.btn-secondary:hover { background: var(--azul-palido); }
+.btn-success { background: var(--verde); color: #fff; }
+.btn-success:hover { background: #155e38; }
+.btn-danger { background: var(--rojo); color: #fff; }
+.btn-danger:hover { background: #a93226; }
+.btn-gold { background: var(--dorado); color: var(--azul); }
+.btn-gold:hover { background: var(--dorado-claro); }
+.btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+.btn-xs { padding: 4px 10px; font-size: 0.75rem; }
+
+/* ── FORM ELEMENTS ── */
+.form-group { margin-bottom: 16px; }
+.form-group label { display:block; font-size:0.82rem; font-weight:600; color:var(--azul); margin-bottom:6px; letter-spacing:0.02em; text-transform:uppercase; }
+.form-control {
+  width: 100%; padding: 9px 14px;
+  border: 1.5px solid #d0dde8;
+  border-radius: 8px; font-family:'DM Sans',sans-serif; font-size:0.9rem;
+  color: var(--texto); background:#fff; transition: border-color 0.2s;
+  outline: none;
+}
+.form-control:focus { border-color: var(--azul-medio); box-shadow: 0 0 0 3px rgba(32,99,155,0.12); }
+select.form-control { cursor:pointer; }
+.upload-zone {
+  border: 2px dashed #b8cfe0;
+  border-radius: var(--radio);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--azul-palido);
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--azul-medio); background: #dceef8; }
+.upload-zone input[type=file] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+.upload-zone .icon { font-size:2rem; margin-bottom:8px; }
+.upload-zone p { color:var(--azul); font-size:0.9rem; font-weight:500; }
+.upload-zone small { color:var(--gris); font-size:0.78rem; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 2px 10px; border-radius: 20px; font-size: 0.74rem; font-weight: 600;
+}
+.badge-blue { background: var(--azul-palido); color: var(--azul-medio); }
+.badge-green { background: #d4f0e0; color: #1a7a4a; }
+.badge-orange { background: #fdebd0; color: #d35400; }
+.badge-red { background: #fde9e9; color: var(--rojo); }
+.badge-gold { background: var(--dorado-claro); color: #7d5a0a; }
+.badge-gray { background: #eef0f4; color: #5a6678; }
+
+/* ── ALERTS ── */
+.alert { padding: 12px 18px; border-radius: 8px; font-size:0.88rem; margin-bottom:12px; display:flex; align-items:flex-start; gap:10px; }
+.alert-warning { background:#fef3e2; border-left:4px solid var(--naranja); color:#8a4700; }
+.alert-error { background:#fde9e9; border-left:4px solid var(--rojo); color:#7a1a1a; }
+.alert-success { background:#d4f0e0; border-left:4px solid var(--verde); color:#0d4a25; }
+.alert-info { background:var(--azul-palido); border-left:4px solid var(--azul-medio); color:var(--azul); }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x:auto; border-radius:var(--radio); }
+table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+thead tr { background:var(--azul); color:#fff; }
+thead th { padding:11px 14px; font-weight:600; text-align:left; white-space:nowrap; letter-spacing:0.02em; font-size:0.8rem; }
+tbody tr { border-bottom:1px solid #edf0f5; transition:background 0.15s; }
+tbody tr:hover { background:var(--azul-palido); }
+tbody td { padding:10px 14px; vertical-align:middle; }
+tbody tr:last-child { border-bottom:none; }
+
+/* ── STAT CARDS ── */
+.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+@media(max-width:900px) { .stat-grid { grid-template-columns:repeat(2,1fr); } }
+.stat-card {
+  background:#fff; border-radius:var(--radio); padding:20px 18px;
+  box-shadow:var(--sombra); border-top:4px solid transparent;
+  transition: all 0.2s;
+}
+.stat-card:hover { box-shadow:var(--sombra-hover); transform:translateY(-2px); }
+.stat-card.blue { border-top-color: var(--azul-medio); }
+.stat-card.green { border-top-color: var(--verde); }
+.stat-card.orange { border-top-color: var(--naranja); }
+.stat-card.red { border-top-color: var(--rojo); }
+.stat-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--azul); }
+.stat-label { font-size:0.8rem; color:var(--gris); margin-top:4px; font-weight:500; }
+.stat-sub { font-size:0.75rem; margin-top:6px; font-weight:600; }
+
+/* ── PROGRESS BAR ── */
+.prog-bar { height:8px; background:#e8f2fa; border-radius:20px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:20px; transition:width 0.6s ease; }
+
+/* ── TAG INPUT ── */
+.tags-container { display:flex; flex-wrap:wrap; gap:6px; padding:8px; border:1.5px solid #d0dde8; border-radius:8px; min-height:42px; cursor:text; }
+.tag { background:var(--azul-palido); color:var(--azul-medio); border-radius:20px; padding:3px 10px; font-size:0.8rem; font-weight:600; display:flex; align-items:center; gap:6px; }
+.tag .remove-tag { cursor:pointer; color:var(--azul); opacity:0.6; font-weight:700; font-size:0.85rem; }
+.tag .remove-tag:hover { opacity:1; color:var(--rojo); }
+.tags-input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-size:0.88rem; flex:1; min-width:80px; padding:2px 4px; }
+
+/* ── HORARIO GRID ── */
+.horario-grid { display:grid; gap:4px; }
+.horario-cell {
+  padding:6px 10px; border-radius:6px; text-align:center; font-size:0.78rem; cursor:pointer;
+  border: 2px solid transparent; transition:all 0.15s; font-weight:500;
+}
+.horario-cell.available { background:#d4f0e0; color:#1a7a4a; border-color:#a0d8b8; }
+.horario-cell.blocked { background:#fde9e9; color:#c0392b; border-color:#f0b0b0; }
+.horario-cell.header { background:var(--azul-palido); color:var(--azul); font-weight:700; cursor:default; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(10,20,40,0.55); z-index:1000;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity 0.2s;
+}
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal {
+  background:#fff; border-radius:16px; padding:32px; max-width:600px; width:100%;
+  box-shadow:0 24px 64px rgba(0,0,0,0.25); max-height:90vh; overflow-y:auto;
+  transform:translateY(20px); transition:transform 0.2s;
+}
+.modal-overlay.open .modal { transform:translateY(0); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.modal-header h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--azul); }
+.modal-close { font-size:1.3rem; cursor:pointer; color:var(--gris); background:none; border:none; padding:4px 8px; border-radius:6px; }
+.modal-close:hover { background:var(--gris-claro); color:var(--rojo); }
+
+/* ── SEARCH BOX ── */
+.search-box { position:relative; }
+.search-box .form-control { padding-left:36px; }
+.search-box .icon { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--gris); font-size:1rem; pointer-events:none; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:7px; height:7px; }
+::-webkit-scrollbar-track { background:#f0f4f8; }
+::-webkit-scrollbar-thumb { background:#b8cfe0; border-radius:10px; }
+
+/* ── PRIORITY INDICATORS ── */
+.prioridad-1 { background:#d4f0e0; color:#1a7a4a; }
+.prioridad-2 { background:#ddeef8; color:#1a5a8c; }
+.prioridad-3 { background:#fdebd0; color:#d35400; }
+.prioridad-4 { background:#fdebd0; color:#d35400; }
+.prioridad-5 { background:#fde9e9; color:#c0392b; }
+.prioridad-6 { background:#fde9e9; color:#c0392b; }
+
+/* ── TOAST ── */
+#toast {
+  position:fixed; bottom:28px; right:28px; z-index:9999;
+  background:var(--azul); color:#fff; padding:13px 22px; border-radius:10px;
+  font-size:0.88rem; font-weight:500; box-shadow:0 8px 28px rgba(0,0,0,0.2);
+  transform:translateY(60px); opacity:0; transition:all 0.3s;
+}
+#toast.show { transform:translateY(0); opacity:1; }
+#toast.success { background:var(--verde); }
+#toast.error { background:var(--rojo); }
+#toast.warning { background:var(--naranja); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align:center; padding:48px 20px; color:var(--gris); }
+.empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:0.5; }
+.empty-state p { font-size:0.95rem; }
+
+/* ── TOOLTIP ── */
+[data-tip] { position:relative; }
+[data-tip]:hover::after {
+  content:attr(data-tip); position:absolute; bottom:110%; left:50%; transform:translateX(-50%);
+  background:var(--azul); color:#fff; padding:5px 10px; border-radius:6px; font-size:0.75rem;
+  white-space:nowrap; pointer-events:none; z-index:100;
+}
+
+/* ── SECTION TITLE ── */
+.section-title { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--azul); font-weight:700; margin-bottom:6px; }
+.section-sub { color:var(--gris); font-size:0.9rem; margin-bottom:24px; }
+
+/* ── SEPARADOR ── */
+hr.sep { border:none; border-top:2px solid var(--azul-palido); margin:20px 0; }
+
+/* ── FLEX UTILS ── */
+.flex { display:flex; }
+.flex-center { display:flex; align-items:center; }
+.gap-8 { gap:8px; }
+.gap-12 { gap:12px; }
+.gap-16 { gap:16px; }
+.mt-8 { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+.mt-16 { margin-top:16px; }
+.mb-8 { margin-bottom:8px; }
+.mb-12 { margin-bottom:12px; }
+.mb-16 { margin-bottom:16px; }
+.text-right { text-align:right; }
+.fw-600 { font-weight:600; }
+
+/* ── TOGGLE ── */
+.toggle { position:relative; width:38px; height:21px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; background:#d0dde8; border-radius:21px; cursor:pointer; transition:0.3s; }
+.toggle-slider:before { content:''; position:absolute; width:15px; height:15px; left:3px; top:3px; background:#fff; border-radius:50%; transition:0.3s; }
+.toggle input:checked + .toggle-slider { background:var(--verde); }
+.toggle input:checked + .toggle-slider:before { transform:translateX(17px); }
+
+/* ── CÓDIGO CHIP ── */
+.codigo-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--azul-palido); border:1px solid #c0d8ec;
+  color:var(--azul-medio); border-radius:6px; padding:1px 8px;
+  font-size:0.75rem; font-weight:700; font-family:'DM Sans',sans-serif;
+}
+
+/* ── SIDEBAR PANEL ── */
+.sidebar-layout { display:grid; grid-template-columns:320px 1fr; gap:24px; }
+@media(max-width:1000px) { .sidebar-layout { grid-template-columns:1fr; } }
+
+.backup-strip {
+  background:linear-gradient(135deg,var(--azul),#2c5f8a);
+  border-radius:10px; padding:16px 20px;
+  color:#fff; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px;
+}
+.backup-strip .info { font-size:0.82rem; opacity:0.85; }
+.backup-strip strong { font-size:0.92rem; }
+
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header>
+  <div class="header-inner">
+    <div class="logo-container">
+      <!-- Logo Universidad Villanueva embebido -->
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAa8AAAB1CAYAAAD5uW78AAAJuklEQVR42u3d23LsKAyF4UmX3/+Vey6mdlUmtdM+IIGA779N2oaF0AFj/M8/AABMxhcJMAvv9/v90Zi/vtgzGylpI5/axW4/a/SbPkeW8C2D9fS3dzs/yyCZPADwf14kAAAIXnhcAZ0teQAABK8hfFqis3wHAILXUlUZAEDwmq4qAwAIXiWrK5WX4A42gmscJADnBDYClRcAAIIXAACCFwBA8AIAoC82bAAF+dvOUxsRAMELHZ1upBOe5fDlDN1+/s/TPj/RMCqYXn0dJMNGIuwk276z9OzVrh7jK3gh1NHdmUR//jd7MvU4Sb/1Hi3v9r3f7/eoLxHcuf+TPn7/zejE5G77e9h3NU1HaOSZF5qN9qkDbvlta3aX/UJ4duDK1jDqmlF9nCVwZY9N1DUjx7dVI8ELU03sKs5ppGOrOhYVx3WEjVTToZrNjLY5wQtLOd8dtavmjLL62NNGqtljNZupoI9nXliar6+vr98mWtYzo8jlyk/tnz04/9Hp7vPSkc9Kz8Z51Fi12FymppkaCV7YYhJVyFif7lS7szlmtIZnfWztX3UbfxKQMzTNbFPrjsuo9lg2RJdJfeXv9Lumz9n/RTv/rw+s0L/IQNHb1u/cp8cGpjt20aqR4IVSjrdaNRh1ryin2FPHJwFqpv7N0Icer3tkrzhkaSR4YagBzkilCVxpTGffdFMtUMw2V3trJHihu8GuWn311iKrT9Hj8/R6KwSMlRK7rOTkqUY2bKDcBFmtktv9C9ktY9rLFqpWXbPMhRHtVHlBVikQsQdMZzuCF0yQgKDkmch50N818FeyjZXG4MgcMFkqoJI766+KjQ2VCl5nYj/dUgxwEnvoWiGoVQys1exwlEavSgPQ8i4Mx4LWifbUhqpWDiPmRKQW72+w3LFLrxXH4FVhMHYyUEskqi42Tn/97xS8nmarkUbM6QMCmMAl6f7D0aPT2eLv8GY8+tjk3XeS2Ne5NtGH1O6k+R3truqyShJwjHYWHAR2znx3sO3ZTo2fKVhWaNsojY47IrVkq08CmKCFyisC7DNHt5U+nZOZNO1uf69eQt8VO6IE5lxoVK3SwrW5zy4lTmGVV4bo353EjqdY75xVCmRoqY5X/3CpeRYcvM6WWno+7J7ZIHqePmLi5DjHKMfZ6oSrVNWzV/czBcpd/eZPXtHC9RAneolSpoaqzmame+rH2nM565CIp799zTZgqwSuHkmAB75zOJ6n99khyanSxxW0HvnKUonK66rTyzg1wyGmtKqQ2Wf8Zvbx6n10W0biFX3NrDF9ct2q9tXSrlf2QEdVEFevM1M1EZ0E3DlqS9U170Q+G+NVDpOt5nDvtKdSlRPZlsgkrLVdR2tHrjTg6a5C74WNMcAdq68eydGV+/z5+9/uU706i9zQNaqvV/rwyQ56tvuKnneDyfdTUZ7aei+Njp4TP3NwZ3XIvnsmUEbOk+rz4FMiO9PqSo85eyfZ6dmvbBu+yitK5NEOYXaH1us+qq51x3u27189+apEjz6aI3No9Jq5Mys54+x+mJDt+lT+SsIq7yGt2IcWP5VhJ1HXHD0fXlWF2dEZZ+in2lrfQVYc3xXsOOJ+Va6RZScj+3dkDbpnW+19dHDsPgHsyVhXH98IO67ySGL05rFoO4n00aM06mIYESJxxF46Ns57nDgx06aTUe2O1PHntSL60UOjr4rGyxEDAAAAAAAAAAAAAAAAAAAAAAAAAAAAdfEiMD7SeqpHxJv2FU40AFCL467Dav34WeTHKFs+PT7C8Y1u08rHDgHYi9unylf5cGLrF21nazMA4CR4VQgMLUHSl4kFVQAqr+6BJXN5bVdHLaAD2CJ4ZQaIzO/7VHfSLc/pAAANlVdmdZRZ1VkeowmANTjOHFtWNfB+v993HecOy4VPdMlMCAQ3AFNWXj23o++ySUNAAIDk4JVdZai6BFEASAlePaovW+Nz+mMTCACV16DAs2LVpeoBgA7Bq+rWeZWF4AlgP46oC2Xsklu16uqlp8C+Jj/HdedExKHNgtflYPDUIWZsu5/dOWe+isBB5NpSRN//ds/frvupfVWDWZbd3D2lZ/VAdtV2V9PhiBYxUiA7DPOCpuqtrX9/fpfxTt73az5p35N5OEuC8lSPO33J/vpCxPVbdFjFP97esNEroMx+DNToytKS4bk+ERpFXSf6ulntmnm8VtAk0m63C16tomRnLrNlFSrEuZKCHteUeOTqUVXf3gn77Hb2yhCZQxcsdwpc+jtf+58u3UVUf7PoUJ3Hz7w+bTY4W3Nv2ajg8F2MCvBntpe14/a39l2dQ73aNcqx/uzbzpXrEy1mtY9jFsexclXRkgioLvolPleCRs9XRlo3dqyaZFzV5dNY9d4JnHWK0d1EZyZeFQXnlOslBrQZp+OV+602tmfLelf7m/EcqdLS30gdpg5e0YNlazwE9ZygailtzSC+s498jTQM7xvFOx7VaR9dej7bMlZjNOmVDEi8C1ZedwZZ1cURAiN8RI+Er0pSuZIfOKIEyTw2SjWBmSZtxKYNyQbYx+DK60rwUXXFZIeCPGafD9VsOLtiu7LD9W+w9MDglSUoh8yhVXOuqx29ZB7sE5BXstujp2jRxrObU571ZUIZP6qP0Yi5FXW/XW33iB6MXme8rerEn2rI+a4z6SUo88zJEUHPXP+PV8+JZ8s3R1glaLEvzBZo2G1y8OoxmBwyZK2okgQ+sSlHvhUNXj5f33eiMGx2BXa7G8eowXga4FRdtMp2AJlfswWbY7fFg5eNBzWDP+KCfe+Tx43PWJuP2rgR2Y+d/cBr1I17rBPvMFE5z3aNnr74SXuMrLp2T2BTg5eHkvtmqXTivKmQZ2/sdmDlddfADRbAuVduX6+AzRf+x9FDaOfyxWvnuRd2rOZabL7XoQeVfdlKfrZL5dWarXDS97SjFyegn/UqH/NywuBlggACe69kV9W1h5/tFrxkK311k9Fr+6ra7K4/+ytUeQlcNBs1ie9eY0fHcbXPkdqc2fGdNmVUXU/eCRw5fivabdcTNrzUiTMHFPF6xc9rnNndlY0ALctVMyQUVzT6Td+sOV2xTdXmTqTdfrfVGez2qDyZuHdBf6Yqbhfn2bNvmbuVZ9iWf9avne32NWJAuMp9tI1o051r/Pa/7M7cHGWXLfdit4WClwHDqKog+ky5Fe008gSIitfa3b+sZLevmSeIrFiWO3Nb2Or6Y7ea7au8OIbtdIvI+EZn8n/73arVV9VXWyLHbqZ51zomK9rt0A5E7DYD2GJ/bei0zpj8vNYs41kqeJkEAIArDF02FKwAAMuWwAAAAAAAAAAAAAAAACvxL28rWgISpS1rAAAAAElFTkSuQmCC" alt="Universidad Villanueva" class="logo-svg">
+      <div class="logo-text">
+        <span class="uni">Universidad Villanueva</span>
+        <span class="sub">Grado en Psicología</span>
+      </div>
+    </div>
+    <div class="header-title">Plataforma de Asignación de Tribunales TFG / TFM</div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="exportBackup()">⬇ Backup</button>
+      <button class="btn-header" onclick="document.getElementById('importBackupInput').click()">⬆ Restaurar</button>
+      <input type="file" id="importBackupInput" accept=".json" style="display:none" onchange="importBackup(event)">
+    </div>
+  </div>
+  <nav class="tabs">
+    <div class="tabs-inner">
+      <div class="tab active" onclick="showTab('tab-datos',this)">📂 Datos</div>
+      <div class="tab" onclick="showTab('tab-profesores',this)">👨‍🏫 Profesores</div>
+      <div class="tab" onclick="showTab('tab-horarios',this)">📅 Horarios</div>
+      <div class="tab" onclick="showTab('tab-asignacion',this)">🎯 Asignación</div>
+      <div class="tab" onclick="showTab('tab-analitica',this)">📊 Analítica</div>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+<!-- ════════════════════════════ TAB: DATOS ════════════════════════════ -->
+<div id="tab-datos" class="panel active">
+  <h2 class="section-title">Carga de Datos</h2>
+  <p class="section-sub">Sube el Excel unificado con las hojas <strong>TFGs</strong> y <strong>Profesores</strong>. Una vez cargado, verás abajo los TFGs con sus códigos temáticos y el estado de los datos.</p>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-header"><div class="card-icon">📂</div><h3>Cargar Excel unificado</h3></div>
+      <div class="alert alert-info mb-12" style="font-size:0.83rem;">
+        <span>💡</span>
+        <div>Sube el archivo <strong>datos_tribunales_2025-26.xlsx</strong> que contiene dos hojas: <strong>TFGs</strong> y <strong>Profesores</strong>. La app las detecta automáticamente.</div>
+      </div>
+      <div class="upload-zone" id="zone-tfgs" style="margin-bottom:12px;">
+        <input type="file" accept=".xlsx,.csv" onchange="handleFileTFGs(event)">
+        <div class="icon">📊</div>
+        <p id="lbl-tfgs">Seleccionar Excel unificado (o solo TFGs)</p>
+        <small>datos_tribunales_2025-26.xlsx</small>
+      </div>
+      <div class="upload-zone" id="zone-profs" style="opacity:0.6;">
+        <input type="file" accept=".xlsx,.csv" onchange="handleFileProfs(event)">
+        <div class="icon">👨‍🏫</div>
+        <p id="lbl-profs">Profesores por separado (opcional)</p>
+        <small>Solo si no usas el Excel unificado</small>
+      </div>
+      <hr class="sep">
+      <button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="reiniciarTodo()">
+        🗑 Reiniciar todo — borrar todos los datos
+      </button>
+    </div>
+
+    <div class="card" id="card-estado">
+      <div class="card-header"><div class="card-icon">ℹ️</div><h3>Estado de Datos</h3></div>
+      <div id="estado-datos"></div>
+    </div>
+  </div>
+
+  <!-- Lista de TFGs con códigos temáticos -->
+  <div class="card">
+    <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon">📋</div>
+        <h3>TFGs cargados — Títulos y Códigos Temáticos</h3>
+      </div>
+      <div class="search-box" style="width:280px;">
+        <span class="icon">🔍</span>
+        <input type="text" class="form-control" id="search-tfgs" placeholder="Buscar TFG, estudiante, tema..." oninput="renderTablaTFGs()">
+      </div>
+    </div>
+    <div id="tabla-tfgs-container">
+      <div class="empty-state"><div class="icon">📋</div><p>Carga el Excel para ver los TFGs</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB: ASIGNACIÓN ════════════════════════════ -->
+<div id="tab-asignacion" class="panel">
+  <h2 class="section-title">Asignación de Tribunales</h2>
+  <p class="section-sub">Configura el algoritmo y ejecuta la asignación. Asegúrate de haber cargado los datos y configurado las incompatibilidades en la pestaña Horarios.</p>
+
+  <div class="sidebar-layout">
+    <div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">⚙️</div><h3>Parámetros del Algoritmo</h3></div>
+
+        <div class="form-group">
+          <label>Máx. tribunales seguidos por profesor</label>
+          <input type="number" class="form-control" id="max-rep" value="2" min="1" max="10">
+        </div>
+
+        <div class="form-group">
+          <label>Ponderación de prioridad temática</label>
+          <select class="form-control" id="peso-afinidad">
+            <option value="1">Estándar (×1)</option>
+            <option value="2" selected>Alta (×2) — Recomendado</option>
+            <option value="3">Muy alta (×3)</option>
+          </select>
+        </div>
+
+        <div class="form-group flex-center gap-8" style="justify-content:space-between;">
+          <label style="margin:0">Respetar restricciones horarias</label>
+          <label class="toggle"><input type="checkbox" id="toggle-horarios" checked><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="form-group flex-center gap-8" style="justify-content:space-between;">
+          <label style="margin:0">Respetar restricciones de estudiantes</label>
+          <label class="toggle"><input type="checkbox" id="toggle-estudiantes" checked><span class="toggle-slider"></span></label>
+        </div>
+
+        <hr class="sep">
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:0.95rem;padding:13px;" onclick="ejecutarAsignacion()">
+          🚀 Ejecutar Asignación
+        </button>
+        <button class="btn btn-secondary mt-8" style="width:100%;justify-content:center;" onclick="resetAsignacion()">
+          ↺ Reiniciar
+        </button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div>
+      <!-- Warnings -->
+      <div id="warnings-container"></div>
+
+      <!-- Stats -->
+      <div id="stats-asignacion" style="display:none;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:4px;">
+          <div class="stat-card blue">
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-label">Total Asignados</div>
+            <div class="stat-sub" style="color:var(--verde);font-weight:600;" id="stat-optimos">—</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-value" id="stat-afinidad">—</div>
+            <div class="stat-label">Afinidad Buena / Parcial</div>
+            <div class="stat-sub" style="color:var(--azul-medio);" id="stat-afinidad-pct">Niveles 2–4</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="stat-value" id="stat-parcial">—</div>
+            <div class="stat-label">Sin Afinidad</div>
+            <div class="stat-sub" style="color:var(--naranja);" id="stat-parcial-pct">Por disponibilidad</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-value" id="stat-sin">—</div>
+            <div class="stat-label">Sin Capacidad</div>
+            <div class="stat-sub" style="color:var(--rojo);" id="stat-sin-pct">Revisar claustro</div>
+          </div>
+        </div>
+        <div id="stats-barra-dist"></div>
+      </div>
+
+      <!-- Tabla resultados -->
+      <div class="card">
+        <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="card-icon">📋</div>
+            <h3>Tribunales Generados</h3>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="exportarAsignaciones()">⬇ Excel</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportarWarnings()">⚠ Advertencias</button>
+          </div>
+        </div>
+
+        <div class="search-box mb-12">
+          <span class="icon">🔍</span>
+          <input type="text" class="form-control" placeholder="Buscar TFG, estudiante, profesor..." id="search-asignaciones" oninput="filtrarTablaAsignaciones()">
+        </div>
+
+        <div id="tabla-asignaciones-container">
+          <div class="empty-state">
+            <div class="icon">📋</div>
+            <p>Carga los datos y pulsa "Ejecutar Asignación"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB: PROFESORES ════════════════════════════ -->
+<div id="tab-profesores" class="panel">
+  <h2 class="section-title">Gestión de Profesores</h2>
+  <p class="section-sub">Administra el claustro docente, sus códigos temáticos y disponibilidad. Los cambios se guardan automáticamente.</p>
+
+  <!-- Guía de códigos temáticos (colapsable) -->
+  <div class="card mb-16" id="card-guia-codigos">
+    <div class="card-header" style="cursor:pointer;justify-content:space-between;" onclick="toggleGuia()">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon">📖</div>
+        <h3>Guía de Códigos Temáticos</h3>
+        <span class="badge badge-blue">Sistema jerárquico UV</span>
+      </div>
+      <span id="guia-toggle-icon" style="font-size:1.2rem;color:var(--azul-medio);">▼</span>
+    </div>
+    <div id="guia-codigos-body" style="display:none;">
+      <div class="alert alert-info mb-16">
+        <span>💡</span>
+        <div>Cada código se compone de una <strong>letra</strong> (macro-área) + un <strong>número</strong> (sub-área). Introduce los códigos en orden de prioridad: el primero pesa más en el algoritmo de afinidad.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;">
+        <!-- A -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:var(--azul);color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">A · Psicología Clínica y de la Salud</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A1</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología clínica general — Evaluación, diagnóstico, intervención</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A2</span></td><td style="padding:5px 4px;color:var(--gris)">Psicopatología — Estudio de trastornos mentales</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A3</span></td><td style="padding:5px 4px;color:var(--gris)">Terapia cognitivo-conductual — TCC, intervenciones basadas en evidencia</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A4</span></td><td style="padding:5px 4px;color:var(--gris)">Terapia familiar y de pareja — Vínculos, dinámicas relacionales</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A5</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología de la salud — Bienestar, calidad de vida</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A6</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología perinatal — Embarazo, parto, puerperio</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A7</span></td><td style="padding:5px 4px;color:var(--gris)">Intervención en crisis — Trauma, primeros auxilios psicológicos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A8</span></td><td style="padding:5px 4px;color:var(--gris)">Trastornos alimentarios — TCA: anorexia, bulimia, atracones</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A9</span></td><td style="padding:5px 4px;color:var(--gris)">Mindfulness / 3.ª generación — ACT, compasión, regulación emocional</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A10</span></td><td style="padding:5px 4px;color:var(--gris)">Prevención del suicidio — Factores de riesgo, abordajes preventivos</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">A11</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología hospitalaria — Atención psicológica en contextos médicos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">A12</span></td><td style="padding:5px 4px;color:var(--gris)">Psicooncología — Cáncer y salud mental</td></tr>
+          </tbody></table>
+        </div>
+        <!-- B -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#1a5c3a;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">B · Psicología Educativa y Evolutiva</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">B1</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología del desarrollo — Cambios a lo largo del ciclo vital</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">B2</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología educativa — Procesos de enseñanza-aprendizaje</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">B3</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología escolar — Intervención en contextos escolares</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">B4</span></td><td style="padding:5px 4px;color:var(--gris)">Intervención educativa — Apoyos y programas educativos</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">B5</span></td><td style="padding:5px 4px;color:var(--gris)">Psicopedagogía — Orientación, tutoría, necesidades educativas</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">B6</span></td><td style="padding:5px 4px;color:var(--gris)">Neuropsicología educativa — Bases cerebrales del aprendizaje</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">B7</span></td><td style="padding:5px 4px;color:var(--gris)">Dificultades de aprendizaje — Dislexia, discalculia, TDAH</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">B8</span></td><td style="padding:5px 4px;color:var(--gris)">Orientación educativa — Planes de vida académica y profesional</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">B9</span></td><td style="padding:5px 4px;color:var(--gris)">Altas capacidades — Identificación y atención al alumnado excepcional</td></tr>
+          </tbody></table>
+        </div>
+        <!-- C -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#5c3a1a;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">C · Psicología Social, Organizacional y del Trabajo</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">C1</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología social — Relaciones, estereotipos, actitudes, grupos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">C2</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología del trabajo — Motivación, clima, productividad</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">C3</span></td><td style="padding:5px 4px;color:var(--gris)">Gestión de RRHH — Selección, desarrollo, formación</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">C4</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología organizacional — Cultura y procesos institucionales</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">C5</span></td><td style="padding:5px 4px;color:var(--gris)">Coaching ejecutivo — Liderazgo, coaching personal y grupal</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">C6</span></td><td style="padding:5px 4px;color:var(--gris)">Liderazgo y clima laboral — Dinámicas de poder y comunicación</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">C7</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología del deporte — Rendimiento, motivación, salud en deportistas</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">C8</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología comunitaria — Intervención social y bienestar</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">C9</span></td><td style="padding:5px 4px;color:var(--gris)">Intervención psicosocial — Colectivos vulnerables</td></tr>
+          </tbody></table>
+        </div>
+        <!-- D -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#3a1a5c;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">D · Psicobiología y Neurociencia</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">D1</span></td><td style="padding:5px 4px;color:var(--gris)">Psicobiología — Bases biológicas del comportamiento</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">D2</span></td><td style="padding:5px 4px;color:var(--gris)">Neurociencia cognitiva — Procesos mentales y estructuras cerebrales</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">D3</span></td><td style="padding:5px 4px;color:var(--gris)">Neuropsicología — Evaluación y rehabilitación neuropsicológica</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">D4</span></td><td style="padding:5px 4px;color:var(--gris)">Psicofisiología — EEG, biofeedback, respuestas corporales</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">D5</span></td><td style="padding:5px 4px;color:var(--gris)">Epigenética y neuroplasticidad — Influencias ambientales</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">D6</span></td><td style="padding:5px 4px;color:var(--gris)">Cognición y emoción — Interacción afectivo-cognitiva</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">D7</span></td><td style="padding:5px 4px;color:var(--gris)">Trastornos del neurodesarrollo — TEA, TDAH, retraso intelectual</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">D8</span></td><td style="padding:5px 4px;color:var(--gris)">Percepción y procesamiento sensorial</td></tr>
+          </tbody></table>
+        </div>
+        <!-- E -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#1a4a5c;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">E · Evaluación, Diagnóstico e Investigación</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">E1</span></td><td style="padding:5px 4px;color:var(--gris)">Psicometría — Teoría de tests, análisis de ítems</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">E2</span></td><td style="padding:5px 4px;color:var(--gris)">Evaluación psicológica — Técnicas e instrumentos clínicos</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">E3</span></td><td style="padding:5px 4px;color:var(--gris)">Metodología de investigación — Diseño, análisis, revisión sistemática</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">E4</span></td><td style="padding:5px 4px;color:var(--gris)">Estadística aplicada — Modelos lineales, regresión, predicción</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">E5</span></td><td style="padding:5px 4px;color:var(--gris)">Validación de instrumentos — Adaptación cultural y fiabilidad</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">E6</span></td><td style="padding:5px 4px;color:var(--gris)">Modelos psicométricos — TRI, CFA, SEM</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">E7</span></td><td style="padding:5px 4px;color:var(--gris)">Diagnóstico clínico — Criterios nosológicos, comorbilidades</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">E8</span></td><td style="padding:5px 4px;color:var(--gris)">Investigación cualitativa y mixta — Entrevistas, triangulación</td></tr>
+          </tbody></table>
+        </div>
+        <!-- F -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#5c4a1a;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">F · Intervención y Técnicas Terapéuticas</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">F1</span></td><td style="padding:5px 4px;color:var(--gris)">Diseño de programas de intervención — Protocolos clínicos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">F2</span></td><td style="padding:5px 4px;color:var(--gris)">Terapias de 3.ª generación — ACT, mindfulness, DBT</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">F3</span></td><td style="padding:5px 4px;color:var(--gris)">Intervención sistémica — Familia, redes, terapia contextual</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">F4</span></td><td style="padding:5px 4px;color:var(--gris)">Modificación de conducta — Técnicas operantes y clásicas</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">F5</span></td><td style="padding:5px 4px;color:var(--gris)">Terapia breve — Focalización de recursos y objetivos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">F6</span></td><td style="padding:5px 4px;color:var(--gris)">Intervención en trauma — PTSD, disociación, reparación</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">F7</span></td><td style="padding:5px 4px;color:var(--gris)">Terapia humanista / florecimiento — Psicología positiva</td></tr>
+          </tbody></table>
+        </div>
+        <!-- G -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#4a4a1a;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">G · Ética, Filosofía y Formación Profesional</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">G1</span></td><td style="padding:5px 4px;color:var(--gris)">Bioética y deontología — Normas profesionales y valores clínicos</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">G2</span></td><td style="padding:5px 4px;color:var(--gris)">Formación del psicólogo — Rol profesional, competencias</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">G3</span></td><td style="padding:5px 4px;color:var(--gris)">Prácticas profesionales — Supervisión, tutorías, informes</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">G4</span></td><td style="padding:5px 4px;color:var(--gris)">Psicología y espiritualidad — Religión, trascendencia y salud mental</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">G5</span></td><td style="padding:5px 4px;color:var(--gris)">Fundamentos filosóficos — Historia y epistemología de la psicología</td></tr>
+          </tbody></table>
+        </div>
+        <!-- H -->
+        <div style="border:1.5px solid var(--azul-palido);border-radius:10px;overflow:hidden;">
+          <div style="background:#1a3a5c;color:#fff;padding:8px 14px;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;">H · Tecnología, Innovación e Inteligencia Artificial</div>
+          <table style="width:100%;font-size:0.78rem;"><tbody>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">H1</span></td><td style="padding:5px 4px;color:var(--gris)">Aplicación de IA en psicología — Uso clínico, diagnóstico, educativo</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">H2</span></td><td style="padding:5px 4px;color:var(--gris)">Herramientas digitales — Apps, plataformas, realidad virtual</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">H3</span></td><td style="padding:5px 4px;color:var(--gris)">Plataformas educativas — LMS, entornos e-learning</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">H4</span></td><td style="padding:5px 4px;color:var(--gris)">Automatización de procesos — Chatbots, dashboards</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">H5</span></td><td style="padding:5px 4px;color:var(--gris)">Visualización interactiva de datos — Gráficos, dashboards</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">H6</span></td><td style="padding:5px 4px;color:var(--gris)">Materiales con IA generativa — Textos, imágenes, apps</td></tr>
+            <tr><td style="padding:5px 10px;"><span class="codigo-chip">H7</span></td><td style="padding:5px 4px;color:var(--gris)">Shiny apps / simuladores — Recursos aplicados en R</td></tr>
+            <tr style="background:#f8fbff"><td style="padding:5px 10px;"><span class="codigo-chip">H8</span></td><td style="padding:5px 4px;color:var(--gris)">Ética en IA — Uso responsable y crítico</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex gap-12 mb-16" style="flex-wrap:wrap;justify-content:space-between;align-items:center;">
+    <div class="search-box" style="flex:1;min-width:250px;max-width:360px;">
+      <span class="icon">🔍</span>
+      <input type="text" class="form-control" placeholder="Buscar profesor o código..." id="search-profesores" oninput="filtrarProfs()">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-primary btn-sm" onclick="abrirModalProfesor(null)">+ Añadir Profesor</button>
+      <button class="btn btn-secondary btn-sm" onclick="exportarProfesores()">⬇ Exportar Excel</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="tabla-profesores-container"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB: ESTUDIANTES ════════════════════════════ -->
+<div id="tab-estudiantes" class="panel">
+  <h2 class="section-title">Disponibilidad de Estudiantes</h2>
+  <p class="section-sub">Lista completa de estudiantes y sus TFGs. Haz clic en "Editar disponibilidad" para marcar los días u horas en que cada estudiante <strong>no puede</strong> asistir a su defensa.</p>
+
+
+
+  <div class="card">
+    <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;"><div class="card-icon">🎓</div><h3>Lista de Estudiantes y TFGs</h3></div>
+      <div class="search-box" style="width:260px;">
+        <span class="icon">🔍</span>
+        <input type="text" class="form-control" id="search-est" placeholder="Buscar estudiante o TFG..." oninput="renderTablaEstudiantes()">
+      </div>
+    </div>
+    <div id="tabla-estudiantes-container">
+      <div class="empty-state"><div class="icon">🎓</div><p>Carga el archivo de TFGs en la pestaña Asignación para ver el listado completo de estudiantes aquí.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB: HORARIOS ════════════════════════════ -->
+<div id="tab-horarios" class="panel">
+  <h2 class="section-title">Configuración y Asignación de Horarios</h2>
+  <p class="section-sub">Define primero el calendario de convocatoria: los días y horas reales en que se celebrarán los tribunales. Después marca las incompatibilidades de profesores y estudiantes sobre esas fechas concretas y ejecuta la asignación automática.</p>
+
+  <!-- PASO 1: Calendario de convocatoria -->
+  <div class="card mb-16">
+    <div class="card-header" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon">📆</div>
+        <h3>Paso 1 — Calendario de convocatoria</h3>
+        <span class="badge badge-blue">Configura antes de marcar incompatibilidades</span>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="guardarCalendario()">💾 Guardar calendario</button>
+    </div>
+    <div class="alert alert-info mb-16">
+      <span>ℹ️</span>
+      <div>Define los <strong>bloques de defensa</strong>: fecha, hora de inicio y fin, y salones disponibles. El sistema calcula automáticamente cuántos tribunales caben (45 min/tribunal por defecto). Las incompatibilidades se marcan por bloque completo. Con varios salones, los tribunales se asignan en paralelo — pero <strong>ningún profesor puede coincidir en dos salas a la misma hora</strong>.</div>
+    </div>
+
+    <!-- Hidden legacy inputs — kept for backward compatibility -->
+    <input type="hidden" id="dias-config" value="">
+    <input type="hidden" id="horas-config" value="">
+    <input type="hidden" id="salones-config" value="">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:end;margin-bottom:12px;" id="cal-add-row">
+      <div class="form-group" style="margin:0">
+        <label>Fecha</label>
+        <input type="date" class="form-control" id="cal-fecha" style="cursor:pointer;">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Hora de inicio</label>
+        <input type="time" class="form-control" id="cal-hora-inicio" value="09:00">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Hora de fin</label>
+        <input type="time" class="form-control" id="cal-hora-fin" value="14:00">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Salones (coma para varios)</label>
+        <input type="text" class="form-control" id="cal-salones" placeholder="Ej: Aula A, Aula B" value="Aula A">
+      </div>
+      <button class="btn btn-primary" onclick="addSesion()" style="height:40px;margin-bottom:0;white-space:nowrap;">+ Añadir bloque</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:0.85rem;color:var(--gris);">
+      <span>⏱</span>
+      <label style="margin:0;color:var(--azul);font-weight:600;">Duración por tribunal:</label>
+      <input type="number" class="form-control" id="cal-duracion" value="45" min="15" max="120" step="5" style="width:70px;">
+      <span>minutos</span>
+      <span style="margin-left:8px;color:var(--gris);font-size:0.8rem;" id="cal-preview-slots"></span>
+    </div>
+
+    <!-- Lista de sesiones añadidas -->
+    <div id="sesiones-container">
+      <div class="empty-state" style="padding:24px;"><div class="icon" style="font-size:1.8rem;">📆</div><p>Añade sesiones usando el formulario de arriba</p></div>
+    </div>
+  </div>
+
+  <!-- PASO 2: Incompatibilidades -->
+  <div class="card mb-16">
+    <div class="card-header">
+      <div class="card-icon">🚫</div>
+      <h3>Paso 2 — Incompatibilidades</h3>
+    </div>
+    <div class="alert alert-info mb-12">
+      <span>ℹ️</span>
+      <div>
+        Dos modos de restricción por profesor:<br>
+        <strong>🔴 Bloquear bloque</strong> — el profesor no puede asistir en ese bloque completo.<br>
+        <strong>🕐 Restricción horaria</strong> — el profesor solo puede desde / hasta cierta hora (p. ej. «solo desde las 17:00»). Los slots fuera de esa ventana se penalizan automáticamente.
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:16px;">
+      <!-- Incompatibilidades profesores -->
+      <div>
+        <div style="font-weight:600;color:var(--azul);margin-bottom:8px;font-size:0.9rem;">👨‍🏫 Profesores</div>
+        <div class="search-box mb-8">
+          <span class="icon">🔍</span>
+          <input type="text" class="form-control" id="search-incompat-prof" placeholder="Filtrar profesor..." oninput="renderIncompatProfs()">
+        </div>
+        <div id="incompat-profs-container" style="max-height:360px;overflow-y:auto;">
+          <div class="empty-state" style="padding:20px;"><p>Guarda el calendario primero</p></div>
+        </div>
+      </div>
+      <!-- Incompatibilidades estudiantes -->
+      <div>
+        <div style="font-weight:600;color:var(--azul);margin-bottom:8px;font-size:0.9rem;">🎓 Estudiantes</div>
+        <div class="search-box mb-8">
+          <span class="icon">🔍</span>
+          <input type="text" class="form-control" id="search-incompat-est" placeholder="Filtrar estudiante o TFG..." oninput="renderIncompatEsts()">
+        </div>
+        <div id="incompat-ests-container" style="max-height:360px;overflow-y:auto;">
+          <div class="empty-state" style="padding:20px;"><p>Carga los TFGs primero</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3: Asignar -->
+  <div class="card mb-16">
+    <div class="card-header" style="justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="card-icon">🚀</div>
+        <h3>Paso 3 — Asignar horarios</h3>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="ejecutarHorarios()">📅 Asignar Horarios</button>
+        <button class="btn btn-secondary btn-sm" onclick="exportarHorarios()">⬇ Descargar Excel</button>
+      </div>
+    </div>
+    <div class="alert alert-info mb-12">
+      <span>ℹ️</span>
+      <div>El sistema buscará la primera sesión disponible para cada tribunal en la que todos los miembros puedan asistir. El tutor (Vocal 2) debe estar libre en esa sesión, pero su asistencia <strong>no cuenta como tribunal asignado</strong> ni descuenta de su cuota.</div>
+    </div>
+    <div id="warnings-horarios"></div>
+    <div id="tabla-horarios-container">
+      <div class="empty-state"><div class="icon">📅</div><p>Configura el calendario, marca incompatibilidades y pulsa "Asignar Horarios"</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════ TAB: ANALÍTICA ════════════════════════════ -->
+<div id="tab-analitica" class="panel">
+  <h2 class="section-title">Analítica de Asignación</h2>
+  <p class="section-sub">Resumen estadístico del proceso de asignación y ocupación del claustro.</p>
+
+  <div class="stat-grid" id="stats-analitica">
+    <div class="stat-card blue"><div class="stat-value" id="a-total">—</div><div class="stat-label">Total TFGs asignados</div></div>
+    <div class="stat-card green"><div class="stat-value" id="a-opt">—</div><div class="stat-label">Tribunales óptimos</div><div class="stat-sub" style="color:var(--verde)" id="a-opt-pct">—</div></div>
+    <div class="stat-card orange"><div class="stat-value" id="a-warn">—</div><div class="stat-label">Con advertencias</div><div class="stat-sub" style="color:var(--naranja)" id="a-warn-pct">—</div></div>
+    <div class="stat-card red"><div class="stat-value" id="a-sin">—</div><div class="stat-label">Sin afinidad temática</div><div class="stat-sub" style="color:var(--rojo)" id="a-sin-pct">—</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-icon">📊</div><h3>Distribución de Tipos de Asignación</h3></div>
+    <div id="chart-tipos" style="display:grid;grid-template-columns:1fr 1fr;gap:0 32px;"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:12px;"><div class="card-icon">👨‍🏫</div><h3>Ocupación del Claustro</h3></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div class="search-box" style="width:220px;">
+          <span class="icon">🔍</span>
+          <input type="text" class="form-control" id="search-resumen-profs" placeholder="Buscar profesor..." oninput="renderTablaResumenProfs()">
+        </div>
+        <select class="form-control" id="sort-resumen-profs" onchange="renderTablaResumenProfs()" style="width:160px;padding:8px 12px;">
+          <option value="ratio-desc">Mayor ocupación</option>
+          <option value="ratio-asc">Menor ocupación</option>
+          <option value="asig-desc">Más asignados</option>
+          <option value="nombre-asc">Nombre A–Z</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="exportarResumenProfs()">⬇ Excel</button>
+      </div>
+    </div>
+    <div id="tabla-resumen-profs-container">
+      <div class="empty-state"><div class="icon">📊</div><p>Ejecuta la asignación para ver los datos</p></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ════════════════════ MODAL PROFESOR ════════════════════ -->
+<div class="modal-overlay" id="modal-profesor">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-prof-title">Añadir Profesor</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-profesor')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Código</label>
+      <input type="text" class="form-control" id="modal-prof-codigo" placeholder="Ej: P001">
+    </div>
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" class="form-control" id="modal-prof-nombre" placeholder="Nombre y apellidos">
+    </div>
+    <div class="form-group">
+      <label>Tribunales máximos que puede asumir</label>
+      <input type="number" class="form-control" id="modal-prof-tribunales" value="4" min="0">
+    </div>
+    <div class="form-group">
+      <label>Códigos temáticos de afinidad (por prioridad)</label>
+      <div class="tags-container" id="tags-codigos-e" onclick="document.getElementById('tag-input-e').focus()">
+        <input type="text" id="tag-input-e" class="tags-input" placeholder="Escribe código y Enter (ej: A1)" onkeydown="addTagOnEnter(event,'tags-codigos-e','tag-input-e')">
+      </div>
+      <small style="color:var(--gris);font-size:0.78rem;margin-top:4px;display:block;">Introduce el código y pulsa Enter. Orden = prioridad.</small>
+    </div>
+    <!-- Grid D/H legacy eliminado — las incompatibilidades se gestionan en la pestaña Horarios -->
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-profesor')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarProfesor()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ MODAL TFG ════════════════════ -->
+<div class="modal-overlay" id="modal-tfg">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-tfg-title">Editar TFG</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-tfg')">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label>Código TFG</label>
+        <input type="text" class="form-control" id="modal-tfg-cod" readonly style="background:var(--gris-claro);color:var(--gris);">
+      </div>
+      <div class="form-group">
+        <label>Código Tutor</label>
+        <input type="text" class="form-control" id="modal-tfg-tutorcod" placeholder="Ej: P001">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label>Nombre estudiante</label>
+        <input type="text" class="form-control" id="modal-tfg-nombre" placeholder="Nombre">
+      </div>
+      <div class="form-group">
+        <label>Apellidos</label>
+        <input type="text" class="form-control" id="modal-tfg-apellidos" placeholder="Apellidos">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Nombre completo del Tutor</label>
+      <input type="text" class="form-control" id="modal-tfg-tutor" placeholder="Nombre y apellidos del tutor">
+    </div>
+    <div class="form-group">
+      <label>Título del TFG</label>
+      <input type="text" class="form-control" id="modal-tfg-tema" placeholder="Título completo">
+    </div>
+    <div class="form-group">
+      <label>Códigos Temáticos <span style="color:var(--gris);font-weight:normal;font-size:0.82rem;">(por prioridad — Enter para añadir)</span></label>
+      <div class="tags-container" id="tags-codigos-tema" onclick="document.getElementById('tag-input-tema').focus()">
+        <input type="text" id="tag-input-tema" class="tags-input" placeholder="Ej: A1" onkeydown="addTagOnEnter(event,'tags-codigos-tema','tag-input-tema')">
+      </div>
+      <small style="color:var(--gris);font-size:0.78rem;margin-top:4px;display:block;">El primer código tiene mayor peso en el algoritmo.</small>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-tfg')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarTFG()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ MODAL ESTUDIANTE ════════════════════ -->
+<div class="modal-overlay" id="modal-estudiante">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-est-title">Editar estudiante</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-estudiante')">✕</button>
+    </div>
+    <div class="form-group">
+      <label>Código TFG</label>
+      <input type="text" class="form-control" id="modal-est-tfg" placeholder="Ej: TFG001">
+    </div>
+    <div class="form-group">
+      <label>Nombre del estudiante</label>
+      <input type="text" class="form-control" id="modal-est-nombre" placeholder="Nombre completo">
+    </div>
+    <div class="alert alert-info" style="font-size:0.82rem;margin-bottom:12px;">
+      <span>ℹ️</span>
+      <div>Las incompatibilidades horarias se gestionan en la pestaña <strong>Horarios → Paso 2</strong>.</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-estudiante')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEstudiante()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════════════════════════
+let state = {
+  tfgs: [],
+  profesores: [],
+  estudiantes: [],        // restricciones de estudiantes (legacy D/H codes)
+  asignaciones: [],
+  horarios: [],
+  warnings: [],
+  sesiones: [],           // [{id, fecha, hora, label}] — calendario real de convocatoria
+  incompatProfs: {},      // { Codigo_Profesor: [sesionId, ...] } — bloques completos bloqueados
+  incompatHoras: {},      // { Codigo_Profesor: { desde: "HH:MM"|null, hasta: "HH:MM"|null } } — restricción por hora
+  incompatEsts: {},       // { TFG: [sesionId, ...] }
+  editProfIdx: null,
+  editEstIdx: null,
+  editTFGIdx: null,
+};
+
+// Intentar cargar desde localStorage
+function loadState() {
+  try {
+    const saved = localStorage.getItem('villanueva_tribunales');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.profesores) state.profesores = parsed.profesores;
+      if (parsed.estudiantes) state.estudiantes = parsed.estudiantes;
+      if (parsed.tfgs) state.tfgs = parsed.tfgs;
+      if (parsed.asignaciones) state.asignaciones = parsed.asignaciones;
+      if (parsed.horarios) state.horarios = parsed.horarios;
+      if (parsed.warnings) state.warnings = parsed.warnings;
+      if (parsed.sesiones) state.sesiones = parsed.sesiones;
+      if (parsed.incompatProfs) state.incompatProfs = parsed.incompatProfs;
+      if (parsed.incompatHoras) state.incompatHoras = parsed.incompatHoras;
+      if (parsed.incompatEsts) state.incompatEsts = parsed.incompatEsts;
+      saveState();
+      renderEstadoDatos(); renderTablaProfs(); renderTablaEstudiantes();
+      renderSesiones(); renderIncompatProfs(); renderIncompatEsts();
+      if (state.asignaciones.length) { renderTablaAsignaciones(); renderWarnings(); renderStats(); }
+      if (state.horarios.length) renderTablaHorarios();
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('villanueva_tribunales', JSON.stringify({
+      profesores: state.profesores,
+      estudiantes: state.estudiantes,
+      tfgs: state.tfgs,
+      asignaciones: state.asignaciones,
+      horarios: state.horarios,
+      warnings: state.warnings,
+      sesiones: state.sesiones,
+      incompatProfs: state.incompatProfs,
+      incompatHoras: state.incompatHoras,
+      incompatEsts: state.incompatEsts,
+    }));
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════════════════
+function showTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  refreshCurrentTab(id);
+}
+
+function refreshCurrentTab(id) {
+  if (id === 'tab-profesores') renderTablaProfs();
+  if (id === 'tab-estudiantes') renderTablaEstudiantes();
+  if (id === 'tab-analitica') renderAnalitica();
+  if (id === 'tab-asignacion') renderEstadoDatos();
+  if (id === 'tab-horarios') { renderSesiones(); renderIncompatProfs(); renderIncompatEsts(); renderTablaHorarios(); }
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function toast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  setTimeout(() => t.className = '', 3200);
+}
+
+// ═══════════════════════════════════════════════════════
+// MODALES
+// ═══════════════════════════════════════════════════════
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+
+// ═══════════════════════════════════════════════════════
+// TAGS INPUT
+// ═══════════════════════════════════════════════════════
+function addTagOnEnter(e, containerId, inputId) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const input = document.getElementById(inputId);
+    const val = input.value.trim().replace(/,/g,'').toUpperCase();
+    if (val) {
+      addTag(containerId, val);
+      input.value = '';
+    }
+  } else if (e.key === 'Backspace') {
+    const input = document.getElementById(inputId);
+    if (!input.value) {
+      const container = document.getElementById(containerId);
+      const tags = container.querySelectorAll('.tag');
+      if (tags.length > 0) tags[tags.length-1].remove();
+    }
+  }
+}
+
+function addTag(containerId, val) {
+  const container = document.getElementById(containerId);
+  const input = container.querySelector('.tags-input');
+  const tag = document.createElement('span');
+  tag.className = 'tag';
+  tag.innerHTML = `${val} <span class="remove-tag" onclick="this.parentElement.remove()">×</span>`;
+  container.insertBefore(tag, input);
+}
+
+function getTagValues(containerId) {
+  return [...document.getElementById(containerId).querySelectorAll('.tag')]
+    .map(t => t.textContent.replace('×','').trim());
+}
+
+function setTags(containerId, values) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.tag').forEach(t => t.remove());
+  (values||[]).forEach(v => addTag(containerId, v));
+}
+
+// ═══════════════════════════════════════════════════════
+// GRID HORARIO (para modales)
+// ═══════════════════════════════════════════════════════
+const DIAS = ['D1','D2','D3','D4'];
+const HORAS = ['H1','H2','H3','H4','H5','H6','H7','H8','H9'];
+
+function buildHorarioGrid(containerId, bloqueados) {
+  const container = document.getElementById(containerId);
+  bloqueados = bloqueados || {};
+  
+  let html = `<div style="overflow-x:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+      <thead><tr><th style="padding:6px 8px;background:var(--azul-palido);color:var(--azul);border-radius:4px;"></th>`;
+  DIAS.forEach(d => { html += `<th style="padding:6px 8px;background:var(--azul-palido);color:var(--azul);text-align:center;border-radius:4px;">${d}</th>`; });
+  html += `</tr></thead><tbody>`;
+  HORAS.forEach(h => {
+    html += `<tr><td style="padding:6px 8px;font-weight:600;color:var(--azul);background:var(--azul-palido);border-radius:4px;">${h}</td>`;
+    DIAS.forEach(d => {
+      const key = `${d}_${h}`;
+      const bloq = bloqueados[key] || false;
+      html += `<td style="padding:4px;text-align:center;">
+        <div class="horario-cell ${bloq?'blocked':'available'}" 
+             id="hcell-${containerId}-${key}" 
+             onclick="toggleHorarioCell('${containerId}','${key}')"
+             data-tip="${bloq?'No disponible':'Disponible — clic para cambiar'}">
+          ${bloq?'✕':'✓'}
+        </div></td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>
+  <div style="display:flex;gap:12px;margin-top:8px;font-size:0.78rem;">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="background:#d4f0e0;color:#1a7a4a;border:2px solid #a0d8b8;border-radius:4px;padding:1px 6px;">✓</span> Disponible</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="background:#fde9e9;color:#c0392b;border:2px solid #f0b0b0;border-radius:4px;padding:1px 6px;">✕</span> No disponible</span>
+  </div>`;
+  container.innerHTML = html;
+}
+
+function toggleHorarioCell(containerId, key) {
+  const cell = document.getElementById(`hcell-${containerId}-${key}`);
+  if (cell.classList.contains('available')) {
+    cell.classList.remove('available'); cell.classList.add('blocked'); cell.textContent = '✕';
+  } else {
+    cell.classList.remove('blocked'); cell.classList.add('available'); cell.textContent = '✓';
+  }
+}
+
+function getHorarioBloqueados(containerId) {
+  const res = {};
+  DIAS.forEach(d => HORAS.forEach(h => {
+    const key = `${d}_${h}`;
+    const cell = document.getElementById(`hcell-${containerId}-${key}`);
+    if (cell && cell.classList.contains('blocked')) res[key] = true;
+  }));
+  return res;
+}
+
+
+// ═══════════════════════════════════════════════════════
+// TFGs — MODAL EDICIÓN
+// ═══════════════════════════════════════════════════════
+function abrirModalTFG(idx) {
+  state.editTFGIdx = idx;
+  const t = state.tfgs[idx];
+  document.getElementById('modal-tfg-title').textContent = 'Editar TFG — ' + (t.TFG || '');
+  document.getElementById('modal-tfg-cod').value       = t.TFG || '';
+  document.getElementById('modal-tfg-nombre').value    = t.Nombre_Estudiante || '';
+  document.getElementById('modal-tfg-apellidos').value = t.Apellido_Estudiante || '';
+  document.getElementById('modal-tfg-tutor').value     = t.Tutor || '';
+  document.getElementById('modal-tfg-tutorcod').value  = t.Codigo_Profesor || '';
+  document.getElementById('modal-tfg-tema').value      = t.Tema || '';
+  const cods = (t.Codigos_Tema || '').split(',').map(s => s.trim()).filter(Boolean);
+  setTags('tags-codigos-tema', cods);
+  abrirModal('modal-tfg');
+}
+
+function guardarTFG() {
+  const idx = state.editTFGIdx;
+  if (idx === null || idx === undefined) return;
+  const t = state.tfgs[idx];
+  t.Nombre_Estudiante   = document.getElementById('modal-tfg-nombre').value.trim();
+  t.Apellido_Estudiante = document.getElementById('modal-tfg-apellidos').value.trim();
+  t.Tutor               = document.getElementById('modal-tfg-tutor').value.trim();
+  t.Codigo_Profesor     = document.getElementById('modal-tfg-tutorcod').value.trim().toUpperCase();
+  t.Tema                = document.getElementById('modal-tfg-tema').value.trim();
+  t.Codigos_Tema        = getTagValues('tags-codigos-tema').join(', ');
+  saveState();
+  cerrarModal('modal-tfg');
+  renderTablaTFGs();
+  toast('TFG actualizado', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// PROFESORES — MODAL
+// ═══════════════════════════════════════════════════════
+function abrirModalProfesor(idx) {
+  state.editProfIdx = idx;
+  const p = idx !== null ? state.profesores[idx] : null;
+  document.getElementById('modal-prof-title').textContent = p ? 'Editar Profesor' : 'Añadir Profesor';
+  document.getElementById('modal-prof-codigo').value = p ? (p.Codigo_Profesor || p.Codigo || '') : '';
+  document.getElementById('modal-prof-nombre').value = p ? (p.Profesor || '') : '';
+  document.getElementById('modal-prof-tribunales').value = p ? (p.Tribunales_d || 4) : 4;
+  const codigos = p ? parseCodigos(p.Codigos_E) : [];
+  setTags('tags-codigos-e', codigos);
+  abrirModal('modal-profesor');
+}
+
+function guardarProfesor() {
+  const codigo    = document.getElementById('modal-prof-codigo').value.trim().toUpperCase();
+  const nombre    = document.getElementById('modal-prof-nombre').value.trim();
+  const tribunales= parseInt(document.getElementById('modal-prof-tribunales').value) || 0;
+  const codigos   = getTagValues('tags-codigos-e');
+  if (!codigo || !nombre) { toast('Completa código y nombre', 'error'); return; }
+  const prof = { Codigo_Profesor: codigo, Profesor: nombre, Tribunales_d: tribunales, Codigos_E: codigos.join(', ') };
+  if (state.editProfIdx !== null) {
+    state.profesores[state.editProfIdx] = prof;
+    toast('Profesor actualizado', 'success');
+  } else {
+    const exists = state.profesores.find(p => (p.Codigo_Profesor||p.Codigo||'').toUpperCase() === codigo);
+    if (exists) { toast('Ese código ya existe', 'error'); return; }
+    state.profesores.push(prof);
+    toast('Profesor añadido', 'success');
+  }
+  saveState();
+  cerrarModal('modal-profesor');
+  renderTablaProfs();
+  renderIncompatProfs(); // refrescar si cambia nombre
+}
+
+function eliminarProfesor(idx) {
+  if (!confirm(`¿Eliminar a ${state.profesores[idx].Profesor}?`)) return;
+  state.profesores.splice(idx, 1);
+  saveState();
+  renderTablaProfs();
+  toast('Profesor eliminado', 'warning');
+}
+
+function renderTablaProfs() {
+  const q = (document.getElementById('search-profesores')?.value||'').toLowerCase();
+  const profs = state.profesores.filter(p =>
+    !q || (p.Profesor||'').toLowerCase().includes(q) || (p.Codigo_Profesor||p.Codigo||'').toLowerCase().includes(q) || (p.Codigos_E||'').toLowerCase().includes(q)
+  );
+  const cont = document.getElementById('tabla-profesores-container');
+  if (!profs.length) { cont.innerHTML = `<div class="empty-state"><div class="icon">👨‍🏫</div><p>No hay profesores cargados. Importa un Excel o añade manualmente.</p></div>`; return; }
+  
+  // Contar tutorías para badge de rol
+  const tutsPorProf = {};
+  state.tfgs.forEach(t => {
+    const c = (t.Codigo_Profesor||'').toUpperCase();
+    if (c) tutsPorProf[c] = (tutsPorProf[c]||0) + 1;
+  });
+  let html = `<div class="table-wrap"><table>
+    <thead><tr><th>Código</th><th>Nombre</th><th style="text-align:center">Máx.</th><th>Rol</th><th>Códigos Temáticos</th><th style="text-align:right">Acciones</th></tr></thead>
+    <tbody>`;
+  profs.forEach((p, i) => {
+    const realIdx = state.profesores.indexOf(p);
+    const cod = (p.Codigo_Profesor||p.Codigo||'').toUpperCase();
+    const codigos = parseCodigos(p.Codigos_E);
+    const nTut = tutsPorProf[cod] || 0;
+    const esEval = (p.Tribunales_d||0) > 0;
+    const rolLabel = esEval && nTut > 0
+      ? `<span class="badge badge-blue" style="font-size:0.72rem;">Evaluador</span> <span class="badge badge-gold" style="font-size:0.72rem;">+${nTut} tutoría${nTut>1?'s':''}</span>`
+      : esEval
+        ? `<span class="badge badge-blue" style="font-size:0.72rem;">Evaluador</span>`
+        : `<span class="badge badge-gold" style="font-size:0.72rem;">Solo tutor · ${nTut} TFG${nTut>1?'s':''}</span>`;
+    html += `<tr>
+      <td><span class="codigo-chip">${cod}</span></td>
+      <td style="font-weight:500">${p.Profesor||''}</td>
+      <td style="text-align:center;color:var(--azul-medio);font-weight:600;">${p.Tribunales_d||0}</td>
+      <td>${rolLabel}</td>
+      <td style="max-width:240px;">${codigos.map(c=>`<span class="codigo-chip">${c}</span>`).join(' ')}${!codigos.length?'<span style="color:var(--gris);font-size:0.8rem;">—</span>':''}</td>
+      <td style="text-align:right;white-space:nowrap;">
+        <button class="btn btn-secondary btn-xs" onclick="abrirModalProfesor(${realIdx})">✏ Editar</button>
+        <button class="btn btn-danger btn-xs" style="margin-left:4px" onclick="eliminarProfesor(${realIdx})">✕</button>
+      </td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  cont.innerHTML = html;
+}
+
+function filtrarProfs() { renderTablaProfs(); }
+
+// ═══════════════════════════════════════════════════════
+// ESTUDIANTES — MODAL
+// ═══════════════════════════════════════════════════════
+function abrirModalEstudiante(idx) {
+  state.editEstIdx = idx;
+  const est = idx !== null ? state.estudiantes[idx] : null;
+  document.getElementById('modal-est-title').textContent = est ? 'Editar Restricción' : 'Añadir Restricción de Estudiante';
+  document.getElementById('modal-est-tfg').value = est ? (est.TFG||'') : '';
+  document.getElementById('modal-est-nombre').value = est ? (est.Nombre||'') : '';
+  
+  const bloqueados = {};
+  if (est) {
+    (est.Dias_Bloqueados||[]).forEach(d => (est.Horas_Bloqueadas||[]).forEach(h => { bloqueados[`${d}_${h}`] = true; }));
+    if (!(est.Dias_Bloqueados||[]).length && (est.Horas_Bloqueadas||[]).length) {
+      DIAS.forEach(d => (est.Horas_Bloqueadas||[]).forEach(h => { bloqueados[`${d}_${h}`] = true; }));
+    }
+    if ((est.Dias_Bloqueados||[]).length && !(est.Horas_Bloqueadas||[]).length) {
+      (est.Dias_Bloqueados||[]).forEach(d => HORAS.forEach(h => { bloqueados[`${d}_${h}`] = true; }));
+    }
+  }
+  buildHorarioGrid('horario-est-grid', bloqueados);
+  abrirModal('modal-estudiante');
+}
+
+function guardarEstudiante() {
+  const tfg = document.getElementById('modal-est-tfg').value.trim().toUpperCase();
+  const nombre = document.getElementById('modal-est-nombre').value.trim();
+  if (!tfg) { toast('Indica el código TFG', 'error'); return; }
+  
+  const bloq = getHorarioBloqueados('horario-est-grid');
+  const diasB = [...new Set(Object.keys(bloq).map(k => k.split('_')[0]))];
+  const horasB = [...new Set(Object.keys(bloq).map(k => k.split('_')[1]))];
+  
+  const est = { TFG: tfg, Nombre: nombre, Dias_Bloqueados: diasB, Horas_Bloqueadas: horasB };
+  
+  if (state.editEstIdx !== null) {
+    state.estudiantes[state.editEstIdx] = est;
+    toast('Restricción actualizada', 'success');
+  } else {
+    state.estudiantes.push(est);
+    toast('Restricción añadida', 'success');
+  }
+  saveState();
+  cerrarModal('modal-estudiante');
+  renderTablaEstudiantes();
+}
+
+function limpiarTodasRestricciones() {
+  if (!confirm('¿Eliminar todas las restricciones de estudiantes?')) return;
+  state.estudiantes = [];
+  saveState();
+  renderTablaEstudiantes();
+  toast('Restricciones eliminadas', 'warning');
+}
+
+function toggleGuia() {
+  const body = document.getElementById('guia-codigos-body');
+  const icon = document.getElementById('guia-toggle-icon');
+  const visible = body.style.display !== 'none';
+  body.style.display = visible ? 'none' : 'block';
+  icon.textContent = visible ? '▼' : '▲';
+}
+
+function renderTablaEstudiantes() {
+  const cont = document.getElementById('tabla-estudiantes-container');
+  const q = (document.getElementById('search-est')?.value||'').toLowerCase();
+
+  // Construir lista maestra desde TFGs cargados
+  // Si no hay TFGs, usar sólo las restricciones registradas
+  let filas = [];
+  if (state.tfgs.length) {
+    filas = state.tfgs.map(tfg => {
+      const cod = (tfg.TFG||'').toString().trim().toUpperCase();
+      const nombre = (tfg.Nombre_Estudiante || tfg.Nombre || '').toString();
+      const apellido = (tfg.Apellido_Estudiante || tfg.Apellido || '').toString();
+      const tema = tfg.Tema || '';
+      const restr = state.estudiantes.find(e => e.TFG === cod) || null;
+      return { TFG: cod, Nombre: nombre, Apellido: apellido, Tema: tema, restr };
+    });
+  } else if (state.estudiantes.length) {
+    filas = state.estudiantes.map(e => ({ TFG: e.TFG, Nombre: e.Nombre||'', Apellido:'', Tema:'', restr: e }));
+  }
+
+  if (q) {
+    filas = filas.filter(f =>
+      f.TFG.toLowerCase().includes(q) ||
+      f.Nombre.toLowerCase().includes(q) ||
+      f.Apellido.toLowerCase().includes(q) ||
+      f.Tema.toLowerCase().includes(q)
+    );
+  }
+
+  if (!filas.length) {
+    cont.innerHTML = `<div class="empty-state"><div class="icon">🎓</div><p>${state.tfgs.length ? 'No se encontraron coincidencias.' : 'Carga el archivo de TFGs en la pestaña Asignación para ver el listado aquí.'}</p></div>`;
+    return;
+  }
+
+  const conRestr = filas.filter(f => f.restr).length;
+  let html = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 14px;background:var(--azul-palido);border-radius:8px;font-size:0.85rem;">
+      <span style="font-weight:600;color:var(--azul)">${filas.length} estudiantes</span>
+      <span style="color:var(--gris)">·</span>
+      <span class="badge badge-green">${conRestr} con restricciones</span>
+      <span class="badge badge-gray">${filas.length - conRestr} sin restricciones</span>
+    </div>
+    <div class="table-wrap"><table>
+    <thead><tr>
+      <th>TFG</th><th>Estudiante</th><th style="max-width:220px">Tema</th>
+      <th>Días bloqueados</th><th>Horas bloqueadas</th>
+      <th style="text-align:right">Disponibilidad</th>
+    </tr></thead><tbody>`;
+
+  filas.forEach(f => {
+    const estIdx = state.estudiantes.findIndex(e => e.TFG === f.TFG);
+    const dias = f.restr ? (f.restr.Dias_Bloqueados||[]) : [];
+    const horas = f.restr ? (f.restr.Horas_Bloqueadas||[]) : [];
+    const tieneRestr = dias.length > 0 || horas.length > 0;
+
+    html += `<tr>
+      <td><span class="codigo-chip">${f.TFG}</span></td>
+      <td style="font-weight:500;white-space:nowrap">${f.Nombre} ${f.Apellido}</td>
+      <td style="max-width:220px;font-size:0.8rem;color:var(--gris)">${f.Tema}</td>
+      <td>${dias.map(d=>`<span class="badge badge-blue">${d}</span>`).join(' ')||'<span style="color:var(--gris);font-size:0.8rem">—</span>'}</td>
+      <td>${horas.map(h=>`<span class="badge badge-gold">${h}</span>`).join(' ')||'<span style="color:var(--gris);font-size:0.8rem">—</span>'}</td>
+      <td style="text-align:right;white-space:nowrap">
+        ${tieneRestr
+          ? `<button class="btn btn-secondary btn-xs" style="margin-right:4px" onclick="abrirModalEstudiantePorTFG('${f.TFG}')">✏ Editar</button>
+             <button class="btn btn-danger btn-xs" onclick="eliminarEstudiante(${estIdx})">✕ Limpiar</button>`
+          : `<button class="btn btn-primary btn-xs" onclick="abrirModalEstudiantePorTFG('${f.TFG}')">+ Añadir</button>`
+        }
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  cont.innerHTML = html;
+}
+
+function abrirModalEstudiantePorTFG(tfgCod) {
+  // Buscar datos del TFG para prellenar nombre
+  const tfgData = state.tfgs.find(t => (t.TFG||'').toString().trim().toUpperCase() === tfgCod);
+  const nombre = tfgData ? `${tfgData.Nombre_Estudiante||''} ${tfgData.Apellido_Estudiante||''}`.trim() : '';
+
+  // Buscar restricción existente
+  const estIdx = state.estudiantes.findIndex(e => e.TFG === tfgCod);
+  const est = estIdx >= 0 ? state.estudiantes[estIdx] : null;
+
+  state.editEstIdx = estIdx >= 0 ? estIdx : null;
+  document.getElementById('modal-est-title').textContent = est ? `Editar disponibilidad — ${tfgCod}` : `Añadir restricciones — ${tfgCod}`;
+  document.getElementById('modal-est-tfg').value = tfgCod;
+  document.getElementById('modal-est-nombre').value = est ? (est.Nombre||nombre) : nombre;
+
+  const bloqueados = {};
+  if (est) {
+    // Marcar celda como bloqueada si el día O la hora están en la lista
+    DIAS.forEach(d => {
+      const dBloq = (est.Dias_Bloqueados||[]).includes(d);
+      HORAS.forEach(h => {
+        const hBloq = (est.Horas_Bloqueadas||[]).includes(h);
+        if (dBloq || hBloq) bloqueados[`${d}_${h}`] = true;
+      });
+    });
+  }
+  buildHorarioGrid('horario-est-grid', bloqueados);
+  abrirModal('modal-estudiante');
+}
+
+// ═══════════════════════════════════════════════════════
+// CARGA DE ARCHIVOS
+// ═══════════════════════════════════════════════════════
+function readXLSX(file, callback) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const wb = XLSX.read(e.target.result, {type:'binary'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, {defval:''});
+    callback(data);
+  };
+  reader.readAsBinaryString(file);
+}
+
+// ── Lee una hoja XLSX y devuelve array de objetos,
+//    buscando la fila de cabecera real (la que contiene headerKey) ──
+function leerHojaConCabecera(sheet, headerKey) {
+  // Intentar primero lectura directa (cabecera en fila 1)
+  var datos = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+  if (datos.length > 0 && datos[0][headerKey] !== undefined) return datos;
+
+  // Si no, buscar la fila que contenga headerKey y releer desde ahí
+  var raw = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+  for (var r = 0; r < Math.min(raw.length, 10); r++) {
+    if (raw[r].indexOf(headerKey) >= 0) {
+      return XLSX.utils.sheet_to_json(sheet, { header: raw[r], range: r + 1, defval: '' });
+    }
+  }
+  return datos; // fallback
+}
+
+// ── Normaliza un array de objetos de profesores:
+//    acepta tanto nombres canónicos como nombres amigables ──
+function normalizarProfesores(dataProf) {
+  var alias = {
+    'Codigo_Profesor':   ['Codigo_Profesor','Código','Codigo','Code'],
+    'Profesor':          ['Profesor','Nombre completo','Nombre','Name'],
+    'Tribunales_d':      ['Tribunales_d','Tribunales_Max','Tribunales Máx.','Tribunales Max','Max'],
+    'Codigos_E':         ['Codigos_E','Codigos Temáticos (por prioridad)','Códigos Temáticos (por prioridad)','Codigos_Tematicos','Codigos E'],
+  };
+  if (!dataProf.length) return [];
+  var firstKey = Object.keys(dataProf[0]);
+  var map = {};
+  Object.keys(alias).forEach(function(canon) {
+    alias[canon].forEach(function(a) {
+      if (firstKey.indexOf(a) >= 0) map[canon] = a;
+    });
+    if (!map[canon]) map[canon] = canon; // fallback
+  });
+
+  var mapaP = {};
+  dataProf.forEach(function(p) {
+    var cod = (p[map['Codigo_Profesor']] || '').toString().trim().toUpperCase();
+    if (!cod || !cod.match(/^P\d+/)) return;
+    if (!mapaP[cod]) {
+      mapaP[cod] = {
+        Codigo_Profesor: cod,
+        Profesor:   (p[map['Profesor']] || '').toString().trim(),
+        Tribunales_d: parseInt(p[map['Tribunales_d']]) || 0,
+        Codigos_E:  (p[map['Codigos_E']] || '').toString().trim(),
+      };
+    } else {
+      // Deduplicar: tomar mayor capacidad
+      var maxN = parseInt(p[map['Tribunales_d']]) || 0;
+      if (maxN > mapaP[cod].Tribunales_d) mapaP[cod].Tribunales_d = maxN;
+      var c1 = parseCodigos(mapaP[cod].Codigos_E || '');
+      var c2 = parseCodigos((p[map['Codigos_E']] || '').toString());
+      mapaP[cod].Codigos_E = c1.concat(c2.filter(function(x){ return c1.indexOf(x)<0; })).join(', ');
+    }
+  });
+  return Object.values(mapaP);
+}
+
+// ── Normaliza un array de objetos de TFGs ──
+function normalizarTFGs(dataTFG) {
+  var alias = {
+    'TFG':               ['TFG'],
+    'Nombre_Estudiante': ['Nombre_Estudiante','Nombre'],
+    'Apellido_Estudiante':['Apellido_Estudiante','Apellidos'],
+    'Tutor':             ['Tutor','Nombre completo Tutor'],
+    'Codigo_Profesor':   ['Codigo_Profesor','Código Tutor','Codigo Tutor'],
+    'Tema':              ['Tema','Título del TFG','Titulo del TFG'],
+    'Codigos_Tema':      ['Codigos_Tema','Códigos Temáticos','Codigos Tematicos','Codigos_Tematicos'],
+  };
+  if (!dataTFG.length) return [];
+  var firstKey = Object.keys(dataTFG[0]);
+  var map = {};
+  Object.keys(alias).forEach(function(canon) {
+    alias[canon].forEach(function(a) {
+      if (firstKey.indexOf(a) >= 0) map[canon] = a;
+    });
+    if (!map[canon]) map[canon] = canon;
+  });
+  return dataTFG
+    .filter(function(r){ var v = (r[map['TFG']]||'').toString().trim(); return v.startsWith('TFG'); })
+    .map(function(r){
+      var obj = {};
+      Object.keys(alias).forEach(function(canon){ obj[canon] = (r[map[canon]]||'').toString().trim(); });
+      return obj;
+    });
+}
+
+function handleFileTFGs(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wb = XLSX.read(ev.target.result, { type: 'array' });
+    const sheetNames = wb.SheetNames.map(s => s.toLowerCase());
+    const idxTFG  = sheetNames.findIndex(s => s.includes('tfg'));
+    const idxProf = sheetNames.findIndex(s => s.includes('prof'));
+
+    if (idxTFG >= 0 && idxProf >= 0) {
+      // ── Excel unificado ──
+      var rawTFG  = leerHojaConCabecera(wb.Sheets[wb.SheetNames[idxTFG]],  'TFG');
+      var rawProf = leerHojaConCabecera(wb.Sheets[wb.SheetNames[idxProf]], 'Codigo_Profesor');
+      state.tfgs      = normalizarTFGs(rawTFG);
+      state.profesores = normalizarProfesores(rawProf);
+      document.getElementById('lbl-tfgs').textContent  = `✓ ${state.tfgs.length} TFGs + ${state.profesores.length} profesores`;
+      document.getElementById('lbl-profs').textContent = `✓ Cargado desde hoja "Profesores"`;
+      document.getElementById('zone-tfgs').style.borderColor  = 'var(--verde)';
+      document.getElementById('zone-profs').style.borderColor = 'var(--verde)';
+      saveState(); renderEstadoDatos(); renderTablaProfs(); renderTablaEstudiantes(); renderTablaTFGs();
+      toast(`✓ ${state.tfgs.length} TFGs y ${state.profesores.length} profesores cargados`, 'success');
+    } else {
+      // ── Solo TFGs ──
+      var rawTFG2 = leerHojaConCabecera(wb.Sheets[wb.SheetNames[0]], 'TFG');
+      state.tfgs = normalizarTFGs(rawTFG2);
+      document.getElementById('lbl-tfgs').textContent = `✓ ${state.tfgs.length} TFGs cargados`;
+      document.getElementById('zone-tfgs').style.borderColor = 'var(--verde)';
+      saveState(); renderEstadoDatos(); renderTablaEstudiantes(); renderTablaTFGs();
+      toast(`${state.tfgs.length} TFGs cargados`, 'success');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function handleFileProfs(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const wb = XLSX.read(ev.target.result, { type: 'array' });
+    const raw = leerHojaConCabecera(wb.Sheets[wb.SheetNames[0]], 'Codigo_Profesor');
+    const dedup = normalizarProfesores(raw);
+    const nDups = raw.filter(r => (r['Codigo_Profesor']||r['Código']||'').toString().match(/^P\d+/)).length - dedup.length;
+    state.profesores = dedup;
+    saveState();
+    document.getElementById('lbl-profs').textContent = `✓ ${dedup.length} profesores cargados`;
+    document.getElementById('zone-profs').style.borderColor = 'var(--verde)';
+    renderEstadoDatos(); renderTablaProfs();
+    if (nDups > 0) toast(`${dedup.length} profesores (${nDups} duplicado(s) fusionado(s))`, 'warning');
+    else toast(`${dedup.length} profesores cargados`, 'success');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function handleFileEstudiantes(e) {
+  readXLSX(e.target.files[0], data => {
+    state.estudiantes = data.map(row => ({
+      TFG: (row.TFG||'').toString().trim().toUpperCase(),
+      Nombre: row.Nombre || row.Nombre_Estudiante || '',
+      Dias_Bloqueados: parseCodigos(row.Dias_Bloqueados || row.DiasB || ''),
+      Horas_Bloqueadas: parseCodigos(row.Horas_Bloqueadas || row.HorasB || ''),
+    }));
+    saveState();
+    renderTablaEstudiantes();
+    toast(`${state.estudiantes.length} restricciones de estudiantes cargadas`, 'success');
+  });
+}
+
+function renderEstadoDatos() {
+  const cont = document.getElementById('estado-datos');
+  const items = [
+    { label: 'TFGs cargados', value: state.tfgs.length, ok: state.tfgs.length > 0 },
+    { label: 'Profesores', value: state.profesores.length, ok: state.profesores.length > 0 },
+    { label: 'Restricciones estudiantes', value: state.estudiantes.length, ok: true },
+    { label: 'Asignaciones previas', value: state.asignaciones.length, ok: true },
+  ];
+  cont.innerHTML = items.map(it => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--azul-palido);">
+      <span style="font-size:0.85rem;color:var(--gris)">${it.label}</span>
+      <span class="badge ${it.ok && it.value > 0 ? 'badge-green' : it.value > 0 ? 'badge-blue' : 'badge-gray'}">${it.value}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ALGORITMO DE ASIGNACIÓN (mejorado)
+// ═══════════════════════════════════════════════════════
+function parseCodigos(str) {
+  if (!str) return [];
+  return str.toString().split(/[,;\s]+/).map(s=>s.trim().toUpperCase()).filter(Boolean);
+}
+
+function scoreAfinidad(codigosProf, codigosTFG, peso) {
+  // Puntuación por posición: primer código vale más
+  let score = 0;
+  const n = codigosProf.length;
+  codigosProf.forEach((c, i) => {
+    const pos = codigosTFG.indexOf(c);
+    if (pos >= 0) {
+      // Valor base según posición del prof (prioridad declarada)
+      const valProf = (n - i) / n;
+      // Valor adicional según posición en el TFG (más importante en TFG = más relevante)
+      const valTFG = (codigosTFG.length - pos) / codigosTFG.length;
+      score += (valProf + valTFG) * peso;
+    }
+  });
+  // Bonus: coincidencia de macro-área (letra)
+  const macrosTFG = [...new Set(codigosTFG.map(c=>c[0]))];
+  codigosProf.forEach(c => { if (macrosTFG.includes(c[0]) && !codigosTFG.includes(c)) score += 0.3; });
+  return score;
+}
+
+function profDisponible(prof, diasBloq, horasBloq) {
+  // Retorna false si el profesor está bloqueado en TODOS los días u horas especificados
+  for (const d of diasBloq) { if (prof[d] === 1 || prof[d] === '1') return false; }
+  for (const h of horasBloq) { if (prof[h] === 1 || prof[h] === '1') return false; }
+  return true;
+}
+
+function ejecutarAsignacion() {
+  if (!state.tfgs.length) { toast('Carga primero los TFGs', 'error'); return; }
+  if (!state.profesores.length) { toast('Carga primero los profesores', 'error'); return; }
+
+  const maxRep = parseInt(document.getElementById('max-rep').value) || 2;
+  const peso = parseFloat(document.getElementById('peso-afinidad').value) || 2;
+  const usarHorarios = document.getElementById('toggle-horarios').checked;
+  const usarEstudiantes = document.getElementById('toggle-estudiantes').checked;
+
+  // Preparar profesores con contadores
+  const profs = state.profesores.map(p => ({
+    ...p,
+    _codigo: (p.Codigo_Profesor || p.Codigo || '').toString().trim().toUpperCase(),
+    _disponible: parseInt(p.Tribunales_d) || 0,
+    _asignados: 0,
+    _repeticiones: 0,
+  }));
+  const profMap = {};
+  profs.forEach(p => { profMap[p._codigo] = p; });
+
+  const asignaciones = [];
+  const warnings = [];
+
+  // ── CAPACIDAD DURA: ningún profesor puede superar Tribunales_d ──
+  // La capacidad máxima es un techo absoluto que nunca se sobrepasa.
+  // Si no hay candidatos con capacidad libre, se genera advertencia
+  // pero NO se fuerza a nadie a superar su límite.
+  //
+  // Escalado de restricciones (de más a menos estricto):
+  //   Nivel 0: capacidad libre + max_rep + restricción horaria estudiante
+  //   Nivel 1: relaja restricción horaria del estudiante
+  //   Nivel 2: relaja max_repeticiones (pero respeta capacidad máxima)
+  //   (NO existe nivel 3 que sobrepase Tribunales_d)
+  // Niveles de relajación (el techo 100% es SIEMPRE inviolable):
+  //   0: capacidad libre + max_rep + restricción horaria estudiante
+  //   1: relaja restricción horaria del estudiante
+  //   2: relaja max_repeticiones
+  //   3: sin restricciones salvo capacidad — asignación por disponibilidad pura
+  function getCandidatos(tutorCod, diasEstBloq, horasEstBloq, nivel) {
+    let pool = profs.filter(p => p._codigo !== tutorCod && p._disponible > 0); // 100% inviolable siempre
+    if (nivel < 2) pool = pool.filter(p => p._repeticiones < maxRep);
+    if (nivel < 1 && usarHorarios && (diasEstBloq.length || horasEstBloq.length)) {
+      pool = pool.filter(p => profDisponible(p, diasEstBloq, horasEstBloq));
+    }
+    // Nivel 3: pool ya está sin restricciones salvo capacidad — no hay filtro adicional
+    return pool;
+  }
+
+  // ── REORDENAR TFGs por dificultad de asignación (más difíciles primero) ──
+  // Los TFGs con códigos más infrecuentes entre el claustro son más difíciles
+  // de asignar con afinidad; procesarlos primero garantiza que encuentren
+  // profesores afines antes de que se agote su capacidad.
+  const codigosFrecuencia = {};
+  profs.forEach(p => {
+    parseCodigos(p.Codigos_E).forEach(c => {
+      codigosFrecuencia[c] = (codigosFrecuencia[c] || 0) + 1;
+    });
+  });
+
+  const tfgsOrdenados = [...state.tfgs].sort((a, b) => {
+    const scoreFrecA = parseCodigos(a.Codigos_Tema || '').reduce((s, c) => s + (codigosFrecuencia[c] || 0), 0);
+    const scoreFrecB = parseCodigos(b.Codigos_Tema || '').reduce((s, c) => s + (codigosFrecuencia[c] || 0), 0);
+    return scoreFrecA - scoreFrecB; // menos frecuente = más difícil = va primero
+  });
+
+  // Mapa para recuperar el orden original al presentar resultados
+  const ordenOriginal = {};
+  state.tfgs.forEach((t, i) => { ordenOriginal[(t.TFG||'').toString()] = i; });
+
+  tfgsOrdenados.forEach(tfg => {
+    const codTFG = parseCodigos(tfg.Codigos_Tema || '');
+    const tutorCod = (tfg.Codigo_Profesor || tfg.Tutor_Codigo || '').toString().trim().toUpperCase();
+    const nombre = tfg.Nombre_Estudiante || tfg.Nombre || '';
+    const apellido = tfg.Apellido_Estudiante || tfg.Apellido || '';
+    const temaLabel = `${tfg.Tema||tfg.TFG} [${nombre} ${apellido}]`;
+
+    let diasEstBloq = [], horasEstBloq = [];
+    if (usarEstudiantes) {
+      const estRestr = state.estudiantes.find(e => e.TFG === (tfg.TFG||'').toString().trim().toUpperCase());
+      if (estRestr) { diasEstBloq = estRestr.Dias_Bloqueados||[]; horasEstBloq = estRestr.Horas_Bloqueadas||[]; }
+    }
+
+    // Probar niveles 0→3 hasta conseguir 2 candidatos con capacidad libre.
+    // El techo del 100% (capacidad) NUNCA se sobrepasa en ningún nivel.
+    let candidatos = [];
+    let nivelUsado = 0;
+    for (let nivel = 0; nivel <= 3; nivel++) {
+      const pool = getCandidatos(tutorCod, diasEstBloq, horasEstBloq, nivel);
+      if (pool.length >= 2) { candidatos = pool; nivelUsado = nivel; break; }
+      if (pool.length > 0 && nivel === 3) { candidatos = pool; nivelUsado = nivel; break; }
+    }
+
+    // sinCapacidad solo ocurre si TODOS los profesores están literalmente al 100%
+    // (suma de Tribunales_d < número de TFGs × 2). Situación extremadamente rara.
+    const sinCapacidad = candidatos.length === 0;
+
+    // Puntuar por afinidad (solo si hay candidatos)
+    // Factor de disponibilidad: penaliza a profesores con muchas incompatibilidades.
+    // dispRatio = slots_libres / slots_totales (0→1). Profesores con pocas horas
+    // disponibles obtienen menos score → el algoritmo los reserva para cuando
+    // sean la única opción temática y rellena antes con los más flexibles.
+    if (candidatos.length > 0) {
+      candidatos = candidatos.map(p => {
+        const dispRatio = (() => {
+          if (!state.sesiones.length) return 1;
+          let tot = 0, disp = 0;
+          const bloques = state.incompatProfs[p._codigo] || [];
+          const horaR   = state.incompatHoras ? (state.incompatHoras[p._codigo] || {}) : {};
+          state.sesiones.forEach(ses => {
+            (ses.slots || [ses.horaInicio || '09:00']).forEach(slotH => {
+              tot++;
+              if (bloques.includes(ses.id)) return;
+              if (horaR.desde && timeToMin(slotH) < timeToMin(horaR.desde)) return;
+              if (horaR.hasta && timeToMin(slotH) >= timeToMin(horaR.hasta)) return;
+              disp++;
+            });
+          });
+          return tot > 0 ? disp / tot : 1;
+        })();
+        const afinidad = scoreAfinidad(parseCodigos(p.Codigos_E), codTFG, peso);
+        // Score combinado: afinidad ponderada por disponibilidad relativa.
+        // La disponibilidad actúa como desempate, no como dominante.
+        // Score final: afinidad dominante + factor disponibilidad como desempate.
+        // Sin afinidad → score 0 (neutro). La selección por disponibilidad se hace
+        // via sort en sinScore, no mediante scores negativos que romperían la lógica.
+        const scoreFinal = afinidad > 0
+          ? afinidad * (0.7 + 0.3 * dispRatio)   // afinidad real: atenúa levemente si poco disponible
+          : 0;                                     // sin afinidad: neutro, el sort por _dispRatio decide
+        return { ...p, _score: scoreFinal, _dispRatio: dispRatio };
+      }).sort((a, b) => b._score - a._score || b._dispRatio - a._dispRatio || a._asignados - b._asignados);
+    }
+
+    // conScore: afinidad real (score positivo)
+    // sinScore: sin afinidad (score ≤ 0) — ordenados por mayor disponibilidad
+    const conScore = candidatos.filter(c => c._score > 0);
+    const sinScore = candidatos.filter(c => c._score <= 0)
+      .sort((a, b) => (b._dispRatio||1) - (a._dispRatio||1));
+
+    let seleccionados = [];
+    let asignTipo = '', warningStr = '', warningColor = '';
+
+    if (sinCapacidad) {
+      // Todos los profesores con capacidad están agotados
+      asignTipo = 'Sin capacidad disponible';
+      warningStr = '⛔ Todos los profesores han alcanzado su capacidad máxima (100%)';
+      warningColor = 'red';
+    } else if (conScore.length >= 2) {
+      seleccionados = conScore.slice(0, 2);
+      asignTipo = 'Afinidad temática óptima';
+    } else if (conScore.length === 1 && candidatos.length >= 2) {
+      seleccionados = [conScore[0], sinScore[0]];
+      asignTipo = 'Presidente afinidad, vocal por horas';
+      warningStr = 'Solo un miembro con afinidad temática';
+      warningColor = 'orange';
+    } else if (candidatos.length >= 2) {
+      // Sin afinidad exacta — intentar afinidad de macro-área (misma letra)
+      const macrosTFG = [...new Set(codTFG.map(c => c[0]))];
+      const conMacro = candidatos.filter(c => parseCodigos(c.Codigos_E).some(cod => macrosTFG.includes(cod[0])));
+      const sinMacro = candidatos.filter(c => !parseCodigos(c.Codigos_E).some(cod => macrosTFG.includes(cod[0])));
+
+      if (conMacro.length >= 2) {
+        seleccionados = conMacro.slice(0, 2);
+        asignTipo = 'Afinidad de macro-área';
+        warningStr = 'Afinidad parcial (misma macro-área, sin código exacto)';
+        warningColor = 'orange';
+      } else if (conMacro.length === 1) {
+        seleccionados = [conMacro[0], sinMacro[0] || candidatos[1]];
+        asignTipo = 'Presidente macro-área, vocal por disponibilidad';
+        warningStr = 'Afinidad parcial (solo presidente con macro-área afín)';
+        warningColor = 'orange';
+      } else {
+        seleccionados = candidatos.slice(0, 2);
+        asignTipo = 'Sin afinidad — asignado por disponibilidad';
+        warningStr = 'Sin afinidad temática ni de macro-área';
+        warningColor = 'red';
+      }
+    } else if (candidatos.length === 1) {
+      seleccionados = [candidatos[0]];
+      asignTipo = 'Tribunal parcial (1 vocal)';
+      warningStr = 'Solo un vocal disponible — revisar capacidad del claustro';
+      warningColor = 'red';
+    }
+
+    // Avisos por relajación de restricciones (nunca por superar capacidad)
+    if (nivelUsado >= 1 && warningColor !== 'red') {
+      warningStr = (warningStr ? warningStr + ' · ' : '') + 'Restricciones horarias del estudiante relajadas';
+      warningColor = 'orange';
+    }
+    if (nivelUsado >= 2) {
+      warningStr = (warningStr ? warningStr + ' · ' : '') + 'Límite de repeticiones consecutivas superado';
+      warningColor = warningColor === 'red' ? 'red' : 'orange';
+    }
+    if (nivelUsado >= 3) {
+      warningStr = (warningStr ? warningStr + ' · ' : '') + 'Asignado por disponibilidad pura (sin afinidad temática)';
+      warningColor = 'orange';
+    }
+
+    // Actualizar contadores
+    seleccionados.forEach(s => {
+      const p = profMap[s._codigo];
+      if (p) { p._disponible = Math.max(0, p._disponible - 1); p._asignados++; p._repeticiones++; }
+    });
+
+    const tutor = profs.find(p => p._codigo === tutorCod);
+    const tutorLabel = tutor ? `${tutor._codigo} - ${tutor.Profesor}` : `${tutorCod} - ${tfg.Tutor||''}`;
+
+    // Tutor = Presidente. Evaluadores seleccionados = Vocal 1 y Vocal 2.
+    asignaciones.push({
+      TFG: tfg.TFG || '',
+      Tema_Estudiante: temaLabel,
+      Presidente: tutorLabel,
+      Vocal1: sinCapacidad ? 'SIN CAPACIDAD' : (seleccionados[0] ? `${seleccionados[0]._codigo} - ${seleccionados[0].Profesor}` : 'Pendiente'),
+      Vocal2: sinCapacidad ? 'SIN CAPACIDAD' : (seleccionados[1] ? `${seleccionados[1]._codigo} - ${seleccionados[1].Profesor}` : 'Pendiente'),
+      ScorePresidente: 0,
+      ScoreVocal1: seleccionados[0] ? seleccionados[0]._score : 0,
+      ScoreVocal2: seleccionados[1] ? seleccionados[1]._score : 0,
+      Score_P: seleccionados[0] ? seleccionados[0]._score.toFixed(2) : '0',
+      Score_V: seleccionados[1] ? seleccionados[1]._score.toFixed(2) : '0',
+      Asignacion: asignTipo,
+      Warnings: warningStr,
+    });
+
+    if (warningStr) {
+      warnings.push({ TFG: tfg.TFG, Tema_Estudiante: temaLabel, Warning: warningStr, Color: warningColor });
+    }
+  });
+
+  // Restaurar orden original de los TFGs
+  asignaciones.sort((a, b) => (ordenOriginal[a.TFG] ?? 999) - (ordenOriginal[b.TFG] ?? 999));
+
+  // Actualizar profesores con contadores finales
+  // _asignados solo cuenta rol evaluador (Presidente/Vocal1), nunca rol tutor.
+  state.profesores = state.profesores.map(p => {
+    const cod = (p.Codigo_Profesor||p.Codigo||'').toString().trim().toUpperCase();
+    const pf = profMap[cod];
+    if (!pf) return p;
+    const max  = parseInt(p.Tribunales_d) || 0;
+    const asig = Math.min(pf._asignados, max);
+    return { ...p, Tribunales_Asignados: asig, horas_disponibles: Math.max(0, max - asig) };
+  });
+
+  state.asignaciones = asignaciones;
+  state.warnings = warnings;
+  saveState();
+
+  renderTablaAsignaciones();
+  renderWarnings();
+  renderStats();
+  toast(`✓ ${asignaciones.length} tribunales asignados`, 'success');
+}
+
+function resetAsignacion() {
+  state.asignaciones = [];
+  state.warnings = [];
+  state.horarios = [];
+  document.getElementById('tabla-asignaciones-container').innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Carga los datos y pulsa "Ejecutar Asignación"</p></div>';
+  document.getElementById('warnings-container').innerHTML = '';
+  document.getElementById('stats-asignacion').style.display = 'none';
+  saveState();
+  toast('Asignación reiniciada', 'warning');
+}
+
+function reiniciarTodo() {
+  if (!confirm('¿Seguro que quieres borrar TODOS los datos? Se perderán TFGs, profesores, asignaciones, horarios e incompatibilidades. Esta acción no se puede deshacer.')) return;
+
+  // Limpiar estado completo
+  state.tfgs          = [];
+  state.profesores    = [];
+  state.estudiantes   = [];
+  state.asignaciones  = [];
+  state.horarios      = [];
+  state.warnings      = [];
+  state.sesiones      = [];
+  state.incompatProfs = {};
+  state.incompatHoras = {};
+  state.incompatEsts  = {};
+
+  // Limpiar localStorage
+  try { localStorage.removeItem('villanueva_tribunales'); } catch(e) {}
+
+  // Resetear labels de upload
+  document.getElementById('lbl-tfgs').textContent  = 'Seleccionar Excel unificado (o solo TFGs)';
+  document.getElementById('lbl-profs').textContent = 'Profesores por separado (opcional)';
+  document.getElementById('zone-tfgs').style.borderColor = '';
+  document.getElementById('zone-profs').style.borderColor = '';
+
+  // Refrescar todas las vistas
+  renderEstadoDatos();
+  renderTablaTFGs();
+  renderTablaProfs();
+  renderTablaEstudiantes();
+  renderSesiones();
+  renderIncompatProfs();
+  renderIncompatEsts();
+  const tabAsig = document.getElementById('tabla-asignaciones-container');
+  if (tabAsig) tabAsig.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Carga los datos y pulsa "Ejecutar Asignación"</p></div>';
+  const wCont = document.getElementById('warnings-container');
+  if (wCont) wCont.innerHTML = '';
+  const stats = document.getElementById('stats-asignacion');
+  if (stats) stats.style.display = 'none';
+  const tabHor = document.getElementById('tabla-horarios-container');
+  if (tabHor) tabHor.innerHTML = '<div class="empty-state"><div class="icon">📅</div><p>Configura el calendario, marca incompatibilidades y pulsa "Asignar Horarios"</p></div>';
+
+  toast('✓ Todos los datos han sido borrados. Puedes empezar de cero.', 'warning');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER TABLA ASIGNACIONES
+// ═══════════════════════════════════════════════════════
+const PRIORIDAD_CLASS = {
+  'Afinidad temática óptima':                          'prioridad-1',
+  'Presidente afinidad, vocal por horas':              'prioridad-2',
+  'Afinidad de macro-área':                            'prioridad-3',
+  'Presidente macro-área, vocal por disponibilidad':   'prioridad-4',
+  'Sin afinidad — asignado por disponibilidad':        'prioridad-5',
+  'Tribunal parcial (1 vocal)':                        'prioridad-6',
+  'Sin capacidad disponible':                          'prioridad-6',
+};
+
+function renderTablaAsignaciones(data) {
+  data = data || state.asignaciones;
+  const cont = document.getElementById('tabla-asignaciones-container');
+  if (!data.length) { cont.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>No hay asignaciones</p></div>`; return; }
+  
+  let html = `<div class="table-wrap"><table>
+    <thead><tr><th>TFG</th><th>Tema / Estudiante</th><th>Cód. Tema</th><th>Presidente (Tutor)</th><th>Vocal 1</th><th>Vocal 2</th><th>Score V1</th><th>Score V2</th><th>Tipo</th></tr></thead><tbody>`;
+  // Helper nombre completo desde código
+  const getNombreAsig = cod => {
+    const codUp = (cod||'').split(' ')[0].toUpperCase();
+    const p = state.profesores.find(p2 => (p2.Codigo_Profesor||p2.Codigo||'').toUpperCase() === codUp);
+    if (p) return p.Profesor || codUp;
+    const t = state.tfgs.find(t2 => (t2.Codigo_Profesor||'').toUpperCase() === codUp);
+    return t ? (t.Tutor || codUp) : (cod||'');
+  };
+
+  data.forEach((row, i) => {
+    const cls = PRIORIDAD_CLASS[row.Asignacion] || 'prioridad-3';
+    const bg  = i % 2 === 0 ? '' : 'background:var(--gris-claro)';
+    // Códigos temáticos del TFG
+    const tfgObj  = state.tfgs.find(t2 => t2.TFG === row.TFG);
+    const codsT   = tfgObj ? (tfgObj.Codigos_Tema||'').split(',').map(s=>s.trim()).filter(Boolean) : [];
+    const codsHtml = codsT.slice(0,4).map(c=>`<span class="codigo-chip" style="font-size:0.7rem;margin:1px;">${c}</span>`).join('') +
+                    (codsT.length>4 ? `<span style="color:var(--gris);font-size:0.7rem;"> +${codsT.length-4}</span>` : '');
+    // Extraer código del label "Pxxx - Nombre"
+    const codPdte = (row.Presidente||'').split(' ')[0];
+    const codV1   = (row.Vocal1||'').split(' ')[0];
+    const codV2   = (row.Vocal2||'').split(' ')[0];
+    const nombrePdte = getNombreAsig(row.Presidente);
+    const nombreV1   = getNombreAsig(row.Vocal1);
+    const nombreV2   = getNombreAsig(row.Vocal2);
+    html += `<tr style="${bg}">
+      <td><span class="codigo-chip">${row.TFG}</span></td>
+      <td style="max-width:180px;font-size:0.82rem;line-height:1.3;">${row.Tema_Estudiante}</td>
+      <td style="white-space:nowrap;">${codsHtml}</td>
+      <td>
+        <span class="codigo-chip" style="background:var(--dorado);color:#fff;">${codPdte}</span>
+        <span style="font-size:0.75rem;color:var(--dorado);display:block;margin-top:2px;">${nombrePdte}</span>
+      </td>
+      <td>
+        <span class="codigo-chip">${codV1}</span>
+        <span style="font-size:0.75rem;color:var(--gris);display:block;margin-top:2px;">${nombreV1}</span>
+      </td>
+      <td>
+        <span class="codigo-chip">${codV2}</span>
+        <span style="font-size:0.75rem;color:var(--gris);display:block;margin-top:2px;">${nombreV2}</span>
+      </td>
+      <td style="text-align:center;font-size:0.82rem;color:var(--azul-medio);font-weight:600;">${row.Score_P||row.ScoreVocal1||'—'}</td>
+      <td style="text-align:center;font-size:0.82rem;color:var(--azul-medio);font-weight:600;">${row.Score_V||row.ScoreVocal2||'—'}</td>
+      <td><span class="badge ${cls}" style="font-size:0.72rem;white-space:nowrap;">${row.Asignacion}</span></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  cont.innerHTML = html;
+}
+
+function filtrarTablaAsignaciones() {
+  const q = document.getElementById('search-asignaciones').value.toLowerCase();
+  const filtered = q ? state.asignaciones.filter(r =>
+    JSON.stringify(r).toLowerCase().includes(q)
+  ) : state.asignaciones;
+  renderTablaAsignaciones(filtered);
+}
+
+function renderWarnings() {
+  const cont = document.getElementById('warnings-container');
+  if (!state.warnings.length) { cont.innerHTML = ''; return; }
+  // Agrupar por tipo de warning para no mezclar causas distintas
+  const grupos = {};
+  state.warnings.forEach(w => {
+    const key = w.Warning || w.Color || 'other';
+    if (!grupos[key]) grupos[key] = { color: w.Color, tfgs: [] };
+    grupos[key].tfgs.push(w.TFG);
+  });
+  let html = '';
+  Object.entries(grupos).forEach(([msg, g]) => {
+    const icon  = g.color === 'red' ? '⛔' : '⚠️';
+    const cls   = g.color === 'red' ? 'alert-error' : 'alert-warning';
+    const style = g.color === 'orange' ? 'border-color:var(--naranja);background:#fff8f0;' : '';
+    html += `<div class="alert ${cls}" style="${style}margin-bottom:6px;">
+      ${icon}
+      <div>
+        <strong>${g.tfgs.length} tribunal(es):</strong> ${msg}<br>
+        <span style="font-size:0.8rem;color:var(--gris);">${g.tfgs.join(', ')}</span>
+      </div>
+    </div>`;
+  });
+  cont.innerHTML = html;
+}
+
+function renderStats() {
+  const data = state.asignaciones;
+  if (!data.length) return;
+
+  const total   = data.length;
+  // Nivel 1: ambos evaluadores con código exacto coincidente
+  const optimos = data.filter(d => d.Asignacion === 'Afinidad temática óptima').length;
+  // Nivel 2: solo presidente con código exacto
+  const buena   = data.filter(d => d.Asignacion === 'Presidente afinidad, vocal por horas').length;
+  // Niveles 3-4: coincidencia de macro-área (misma letra)
+  const parcial = data.filter(d => ['Afinidad de macro-área','Presidente macro-área, vocal por disponibilidad'].includes(d.Asignacion)).length;
+  // Nivel 5: sin afinidad, por disponibilidad pura
+  const sinAfin = data.filter(d => d.Asignacion === 'Sin afinidad — asignado por disponibilidad').length;
+  // Nivel 6: sin capacidad o tribunal parcial
+  const sinCap  = data.filter(d => ['Sin capacidad disponible','Tribunal parcial (1 vocal)'].includes(d.Asignacion)).length;
+
+  const pct = n => total > 0 ? Math.round(n/total*100) : 0;
+
+  document.getElementById('stats-asignacion').style.display = 'grid';
+
+  // Actualizar las 4 tarjetas con la realidad
+  document.getElementById('stat-total').textContent       = total;
+  document.getElementById('stat-optimos').textContent     = `${optimos} óptimos (${pct(optimos)}%)`;
+  document.getElementById('stat-afinidad').textContent    = buena + parcial;
+  document.getElementById('stat-afinidad-pct').textContent= `Nivel 2-4: ${pct(buena+parcial)}%`;
+  document.getElementById('stat-parcial').textContent     = sinAfin;
+  document.getElementById('stat-parcial-pct').textContent = `Sin afinidad: ${pct(sinAfin)}%`;
+  document.getElementById('stat-sin').textContent         = sinCap;
+  document.getElementById('stat-sin-pct').textContent     = `Sin capacidad: ${pct(sinCap)}%`;
+
+  // Actualizar labels de las tarjetas para que sean más descriptivos
+  const labels = document.querySelectorAll('.stat-label');
+  const sublabels = document.querySelectorAll('.stat-sublabel');
+  // Construir barra de distribución visual debajo de las tarjetas
+  const barContainer = document.getElementById('stats-barra-dist');
+  if (barContainer) {
+    const segmentos = [
+      { n: optimos,       color: 'var(--verde)',    label: `Óptima: ${optimos}` },
+      { n: buena,         color: 'var(--azul-medio)',label: `Buena: ${buena}` },
+      { n: parcial,       color: 'var(--dorado)',   label: `Parcial: ${parcial}` },
+      { n: sinAfin,       color: 'var(--naranja)',  label: `Sin afinidad: ${sinAfin}` },
+      { n: sinCap,        color: 'var(--rojo)',     label: `Sin capacidad: ${sinCap}` },
+    ].filter(s => s.n > 0);
+    barContainer.innerHTML = `
+      <div style="margin-top:16px;">
+        <div style="font-size:0.82rem;font-weight:600;color:var(--azul);margin-bottom:8px;">Distribución por calidad de asignación</div>
+        <div style="display:flex;height:18px;border-radius:9px;overflow:hidden;gap:1px;">
+          ${segmentos.map(s => `<div style="flex:${s.n};background:${s.color};min-width:2px;" title="${s.label}"></div>`).join('')}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;">
+          ${segmentos.map(s => `
+            <span style="display:flex;align-items:center;gap:5px;font-size:0.78rem;">
+              <span style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0;"></span>
+              <span style="color:var(--gris)">${s.label} <strong style="color:var(--texto)">(${pct(s.n)}%)</strong></span>
+            </span>`).join('')}
+        </div>
+      </div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// ASIGNACIÓN DE HORARIOS
+// ═══════════════════════════════════════════════════════
+function ejecutarHorarios() {
+  if (!state.asignaciones.length) { toast('Primero ejecuta la asignación de tribunales', 'error'); return; }
+  if (!state.sesiones.length)     { toast('Configura el calendario en el Paso 1 primero', 'error'); return; }
+
+  // ── Construir lista plana de slots ordenados cronológicamente ──────
+  // Cada slot = { sesionId, bloqueLabel, fecha, slotHora, horaFin, salon, ocupado }
+  // El orden es: bloque → turno (hora) → salón
+  // Así los salones paralelos de la misma hora se asignan al mismo tiempo
+  const slotsPlanos = [];
+  state.sesiones.forEach(ses => {
+    const turnosDelBloque = ses.slots || [ses.horaInicio || ses.hora || '09:00'];
+    const dur = ses.duracion || 45;
+    const salonesDelBloque = ses.salones || ['Aula A'];
+    turnosDelBloque.forEach(turno => {
+      salonesDelBloque.forEach(salon => {
+        slotsPlanos.push({
+          sesionId:    ses.id,
+          bloqueLabel: ses.label,
+          fecha:       ses.fecha,
+          slotHora:    turno,
+          horaFin:     minToTime(timeToMin(turno) + dur),
+          salon,
+          ocupado:     false
+        });
+      });
+    });
+  });
+
+  const profMap = {};
+  state.profesores.forEach(p => { profMap[(p.Codigo_Profesor||p.Codigo||'').toUpperCase()] = p; });
+
+  const horarios     = [];
+  const advertencias = [];
+
+  // ── Función: puntuación de compactación de un slot ──────────────────
+  // Premia que los miembros del tribunal ya tengan otros tribunales
+  // asignados en el mismo bloque o en turnos adyacentes.
+  // Penaliza (sin descartar) los slots con incompatibilidades.
+  function puntuacionSlot(slot, todos, tfgCod) {
+    let pts = 0;
+
+    // Bonus compactación: cada miembro que ya tenga asignación en el mismo bloque
+    horarios.forEach(h => {
+      const miembros2 = [h.Presidente, h.Vocal1, h.Vocal2];
+      const compartidos = todos.filter(c => miembros2.includes(c)).length;
+      if (compartidos === 0) return;
+      if (h.SesionId === slot.sesionId) {
+        // Mismo bloque → bonificación alta
+        if (h.SlotHora === slot.slotHora) return; // misma hora exacta = solapamiento, no bonificar
+        pts += compartidos * 3;
+      } else if (h.Fecha === slot.fecha) {
+        // Mismo día, bloque diferente → bonificación media
+        pts += compartidos * 1;
+      }
+    });
+
+    // Penalización por incompatibilidades (no descarta, solo baja prioridad)
+    const sesIdx   = state.sesiones.findIndex(s => s.id === slot.sesionId);
+    const horasUni = [...new Set(state.sesiones.flatMap(s => s.slots || [s.horaInicio || s.hora || '']))];
+    const dCode    = `D${sesIdx + 1}`;
+    const hCode    = `H${horasUni.indexOf(slot.slotHora) + 1}`;
+
+    todos.forEach(cod => {
+      // Incompatibilidad de bloque completo
+      if ((state.incompatProfs[cod] || []).includes(slot.sesionId)) pts -= 10;
+      // Restricción de hora (desde/hasta) — penalizar slots fuera de la ventana
+      const horaR = state.incompatHoras ? (state.incompatHoras[cod] || {}) : {};
+      if (horaR.desde && timeToMin(slot.slotHora) < timeToMin(horaR.desde)) pts -= 8;
+      if (horaR.hasta && timeToMin(slot.slotHora) >= timeToMin(horaR.hasta)) pts -= 8;
+      // Incompatibilidad legacy D/H
+      const p = profMap[cod];
+      if (p && !(state.incompatProfs[cod]||[]).length) {
+        if (p[dCode] === 1 || p[dCode] === '1' || p[hCode] === 1 || p[hCode] === '1') pts -= 5;
+      }
+    });
+    if ((state.incompatEsts[tfgCod] || []).includes(slot.sesionId)) pts -= 8;
+
+    return pts;
+  }
+
+  // ── Ordenar tribunales para maximizar compactación y respetar restricciones ──
+  // Criterio 1: primero los tribunales que tienen algún miembro con poca disponibilidad
+  //             (así ese profesor ocupa sus pocos slots libres antes de que se llenen)
+  // Criterio 2: dentro de igual restricción, agrupar por Presidente (=tutor)
+  //             para que sus TFGs queden consecutivos
+  function getMinDispRatio(tribunal) {
+    const miembros = [tribunal.Presidente, tribunal.Vocal1, tribunal.Vocal2]
+      .map(x => x.split(' ')[0].toUpperCase());
+    const ratios = miembros.map(cod => {
+      let tot = 0, disp = 0;
+      const bloques = state.incompatProfs[cod] || [];
+      const horaR   = state.incompatHoras ? (state.incompatHoras[cod] || {}) : {};
+      state.sesiones.forEach(ses => {
+        (ses.slots || [ses.horaInicio || '09:00']).forEach(slotH => {
+          tot++;
+          if (bloques.includes(ses.id)) return;
+          if (horaR.desde && timeToMin(slotH) < timeToMin(horaR.desde)) return;
+          if (horaR.hasta && timeToMin(slotH) >= timeToMin(horaR.hasta)) return;
+          disp++;
+        });
+      });
+      return tot > 0 ? disp / tot : 1;
+    });
+    return Math.min(...ratios); // el miembro más restringido del tribunal
+  }
+
+  const asignacionesOrdenadas = [...state.asignaciones].sort((a, b) => {
+    const minDispA = getMinDispRatio(a);
+    const minDispB = getMinDispRatio(b);
+    // Más restringido (ratio menor) → procesar antes
+    if (Math.abs(minDispA - minDispB) > 0.05) return minDispA - minDispB;
+    // Empate en disponibilidad → agrupar por tutor (Presidente)
+    const pteA = a.Presidente.split(' ')[0];
+    const pteB = b.Presidente.split(' ')[0];
+    return pteA.localeCompare(pteB);
+  });
+
+  asignacionesOrdenadas.forEach(tribunal => {
+    const codPdte = tribunal.Presidente.split(' ')[0].toUpperCase(); // tutor
+    const codVoc1 = tribunal.Vocal1.split(' ')[0].toUpperCase();
+    const codVoc2 = tribunal.Vocal2.split(' ')[0].toUpperCase();
+    const todos   = [codPdte, codVoc1, codVoc2];
+    const tfgCod  = (tribunal.TFG || '').toString().trim().toUpperCase();
+
+    // ── Evaluar todos los slots no ocupados y elegir el mejor ──────────
+    // Para cada slot candidato (no ocupado, sin solapamiento):
+    //   1. Verificar anti-solapamiento (hard constraint — nunca se rompe)
+    //   2. Calcular puntuación (compatibilidad + compactación)
+    //   3. Elegir el de mayor puntuación
+    // Si la puntuación del mejor es negativa → hay incompatibilidades pero
+    //   se asigna igualmente con aviso (nunca queda sin horario).
+
+    let mejorSlot = null;
+    let mejorPts  = -Infinity;
+    let mejorIdx  = -1;
+
+    for (let j = 0; j < slotsPlanos.length; j++) {
+      const slot = slotsPlanos[j];
+      if (slot.ocupado) continue;
+
+      // Anti-solapamiento: hard constraint — nunca se puede romper
+      const solapamiento = horarios.some(h => {
+        if (h.Fecha !== slot.fecha || h.SlotHora !== slot.slotHora) return false;
+        const miembros2 = [h.Presidente, h.Vocal1, h.Vocal2];
+        return todos.some(c => miembros2.includes(c));
+      });
+      if (solapamiento) continue; // este slot es físicamente imposible
+
+      const pts = puntuacionSlot(slot, todos, tfgCod);
+
+      // Preferir el slot con mayor puntuación; en empate, el primero (cronológico)
+      if (pts > mejorPts) { mejorPts = pts; mejorSlot = slot; mejorIdx = j; }
+    }
+
+    if (!mejorSlot) {
+      // Físicamente imposible (todos los slots tienen solapamiento para este tribunal)
+      // Situación extremadamente rara — solo si hay más tribunales que slots totales
+      advertencias.push({ tfg: tribunal.TFG, msg: `${tribunal.TFG} — sin slot físico posible (¿hay suficientes bloques?)`, color: 'error' });
+      // Añadir fila al horario sin slot para que no quede vacío
+      horarios.push({
+        TFG: tribunal.TFG, Tema_Estudiante: tribunal.Tema_Estudiante,
+        Presidente: codPdte, Vocal1: codVoc1, Vocal2: codVoc2,
+        SesionId: '', Dia: '—', Fecha: '—', SlotHora: '—', HoraFin: '—',
+        Hora: 'SIN SLOT', Salon: '—', _sinSlot: true,
+      });
+      return;
+    }
+
+    // Avisar si el mejor slot tiene incompatibilidades o restricciones de hora forzadas
+    if (mejorPts < 0) {
+      // Detectar si es por restricción de hora específica o bloque completo
+      const tieneRestrHora = todos.some(cod => {
+        const horaR = state.incompatHoras ? (state.incompatHoras[cod] || {}) : {};
+        return (horaR.desde && timeToMin(mejorSlot.slotHora) < timeToMin(horaR.desde)) ||
+               (horaR.hasta && timeToMin(mejorSlot.slotHora) >= timeToMin(horaR.hasta));
+      });
+      const msg = tieneRestrHora
+        ? `${tribunal.TFG} — asignado fuera de la ventana horaria preferida de algún miembro (requiere revisión)`
+        : `${tribunal.TFG} — asignado con incompatibilidad de bloque (requiere revisión manual)`;
+      advertencias.push({ tfg: tribunal.TFG, msg, color: 'warning' });
+    }
+
+    horarios.push({
+      TFG:             tribunal.TFG,
+      Tema_Estudiante: tribunal.Tema_Estudiante,
+      Presidente:      codPdte,
+      Vocal1:          codVoc1,
+      Vocal2:          codVoc2,
+      SesionId:        mejorSlot.sesionId,
+      Dia:             mejorSlot.bloqueLabel,
+      Fecha:           mejorSlot.fecha,
+      SlotHora:        mejorSlot.slotHora,
+      HoraFin:         mejorSlot.horaFin,
+      Hora:            `${mejorSlot.slotHora}–${mejorSlot.horaFin}`,
+      Salon:           mejorSlot.salon,
+      _incompatForzada: mejorPts < 0,
+    });
+    mejorSlot.ocupado = true;
+  });
+
+  // Reordenar resultados al orden original de asignaciones
+  const ordenOrig = {};
+  state.asignaciones.forEach((a, i) => { ordenOrig[a.TFG] = i; });
+  horarios.sort((a, b) => (ordenOrig[a.TFG] ?? 999) - (ordenOrig[b.TFG] ?? 999));
+
+  state.horarios = horarios;
+  saveState();
+  renderTablaHorarios();
+
+  const wCont = document.getElementById('warnings-horarios');
+  const errores   = advertencias.filter(w => w.color === 'error');
+  const warnings2 = advertencias.filter(w => w.color === 'warning');
+  wCont.innerHTML =
+    errores.map(w =>   `<div class="alert alert-error">⛔ ${w.msg}</div>`).join('') +
+    warnings2.map(w => `<div class="alert alert-warning" style="border-color:var(--naranja);background:#fff8f0;">⚠️ ${w.msg}</div>`).join('');
+
+  const nIncompat = warnings2.length;
+  const nSinSlot  = errores.length;
+  toast(
+    `✓ ${horarios.length} tribunales asignados` +
+    (nIncompat  ? ` · ${nIncompat} con incompatibilidad horaria` : '') +
+    (nSinSlot   ? ` · ${nSinSlot} sin slot físico` : ''),
+    (nSinSlot > 0) ? 'error' : (nIncompat > 0 ? 'warning' : 'success')
+  );
+}
+
+function renderTablaHorarios() {
+  const cont = document.getElementById('tabla-horarios-container');
+  if (!state.horarios.length) { cont.innerHTML = `<div class="empty-state"><div class="icon">📅</div><p>No hay horarios asignados aún</p></div>`; return; }
+  let html = `<div class="table-wrap"><table>
+    <thead><tr><th>TFG</th><th>Tema / Estudiante</th><th>Presidente (Tutor)</th><th>Vocal 1</th><th>Vocal 2</th><th>Fecha</th><th>Hora</th><th>Salón</th></tr></thead><tbody>`;
+  state.horarios.forEach(h => {
+    // Compatible con slots nuevos (SlotHora) y legacy
+    const horaLabel = h.Hora || h.SlotHora || '—';
+    // Fecha legible
+    let fechaLabel = h.Fecha || h.Dia || '—';
+    if (h.Fecha) {
+      try {
+        const d2 = new Date(h.Fecha + 'T12:00:00');
+        const ds = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const ms = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+        fechaLabel = `${ds[d2.getDay()]} ${d2.getDate()} ${ms[d2.getMonth()]}`;
+      } catch(e) {}
+    }
+    const getNombre = cod => {
+      const p = state.profesores.find(p2 => (p2.Codigo_Profesor||p2.Codigo||'').toUpperCase() === cod);
+      if (p) return p.Profesor || cod;
+      // buscar en tutores del Excel TFGs
+      const t = state.tfgs.find(t2 => (t2.Codigo_Profesor||'').toUpperCase() === cod);
+      return t ? (t.Tutor || cod) : cod;
+    };
+    const rowBg = h._sinSlot ? 'background:#fff0f0;' : (h._incompatForzada ? 'background:#fff8f0;' : '');
+    const incompatBadge = h._incompatForzada ? '<br><span style="font-size:0.68rem;color:var(--naranja);font-weight:600;">⚠ incompatibilidad</span>' : '';
+    html += `<tr style="${rowBg}">
+      <td><span class="codigo-chip">${h.TFG}</span></td>
+      <td style="max-width:180px;font-size:0.82rem;">${h.Tema_Estudiante}</td>
+      <td><span class="codigo-chip">${h.Presidente}</span><br><span style="font-size:0.75rem;color:var(--dorado)">${getNombre(h.Presidente)}</span></td>
+      <td><span class="codigo-chip">${h.Vocal1}</span><br><span style="font-size:0.75rem;color:var(--gris)">${getNombre(h.Vocal1)}</span></td>
+      <td><span class="codigo-chip">${h.Vocal2}</span><br><span style="font-size:0.75rem;color:var(--gris)">${getNombre(h.Vocal2)}</span></td>
+      <td><span class="badge badge-blue" style="font-size:0.78rem;white-space:nowrap;">${fechaLabel}</span>${incompatBadge}</td>
+      <td><span class="badge ${h._sinSlot ? 'badge-orange' : 'badge-gold'}" style="white-space:nowrap;">${horaLabel}</span></td>
+      <td><span class="badge badge-green">${h.Salon}</span></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  cont.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// ANALÍTICA
+// ═══════════════════════════════════════════════════════
+function renderAnalitica() {
+  if (!state.asignaciones.length) return;
+  const data = state.asignaciones;
+  const total = data.length;
+
+  const opt = data.filter(d => d.Asignacion === 'Afinidad temática óptima').length;
+  const warn = state.warnings.length;
+  const sin = state.warnings.filter(w => w.Color === 'red').length;
+
+  document.getElementById('a-total').textContent = total;
+  document.getElementById('a-opt').textContent = opt;
+  document.getElementById('a-opt-pct').textContent = `${Math.round(opt/total*100)}% del total`;
+  document.getElementById('a-warn').textContent = warn;
+  document.getElementById('a-warn-pct').textContent = `${Math.round(warn/total*100)}%`;
+  document.getElementById('a-sin').textContent = sin;
+  document.getElementById('a-sin-pct').textContent = `${Math.round(sin/total*100)}%`;
+
+  // Chart tipos — colores actualizados al sistema nuevo
+  const coloresTipo = {
+    'Afinidad temática óptima':                        '#20639B',
+    'Presidente afinidad, vocal por horas':            '#4a90c4',
+    'Afinidad de macro-área':                          '#e67e22',
+    'Presidente macro-área, vocal por disponibilidad': '#f0a500',
+    'Sin afinidad — asignado por disponibilidad':      '#c0392b',
+    'Tribunal parcial (1 vocal)':                      '#7d1a1a',
+    'Sin capacidad disponible':                        '#3d0000',
+  };
+  const tipos = {};
+  data.forEach(d => { tipos[d.Asignacion] = (tipos[d.Asignacion]||0) + 1; });
+  const entradasTipo = Object.entries(tipos).sort((a,b) => b[1]-a[1]);
+
+  const chartTipos = document.getElementById('chart-tipos');
+  chartTipos.innerHTML = entradasTipo.map(([k, v]) => {
+    const pct = Math.round(v/total*100);
+    const col = coloresTipo[k] || '#8a9ab0';
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:0.83rem;margin-bottom:5px;">
+        <span style="font-weight:500;color:var(--texto)">${k}</span>
+        <span style="font-weight:700;color:${col};flex-shrink:0;margin-left:10px;">${v} <span style="font-weight:400;color:var(--gris)">(${pct}%)</span></span>
+      </div>
+      <div class="prog-bar" style="height:10px;border-radius:6px;">
+        <div class="prog-fill" style="width:${pct}%;background:${col};border-radius:6px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Tabla resumen del claustro
+  renderTablaResumenProfs();
+}
+
+function renderTablaResumenProfs() {
+  const cont = document.getElementById('tabla-resumen-profs-container');
+  if (!state.profesores.length) {
+    cont.innerHTML = `<div class="empty-state"><div class="icon">📊</div><p>No hay datos</p></div>`;
+    return;
+  }
+
+  const q = (document.getElementById('search-resumen-profs')?.value || '').toLowerCase();
+  const sort = document.getElementById('sort-resumen-profs')?.value || 'ratio-desc';
+
+  // Construir filas con datos reales del estado
+  const tutoriasPorProf = {};
+  state.tfgs.forEach(t => {
+    const cod = (t.Codigo_Profesor || '').toString().trim().toUpperCase();
+    if (cod) tutoriasPorProf[cod] = (tutoriasPorProf[cod] || 0) + 1;
+  });
+  let filas = state.profesores.map(p => {
+    const cod  = (p.Codigo_Profesor || p.Codigo || '').toString().trim().toUpperCase();
+    const max  = parseInt(p.Tribunales_d) || 0;
+    const asig = Math.min(parseInt(p.Tribunales_Asignados) || 0, max);
+    const disp = Math.max(0, max - asig);
+    const ratio = max > 0 ? Math.round(asig / max * 100) : 0;
+    const tutorias = tutoriasPorProf[cod] || 0;
+    return { codigo: cod, nombre: p.Profesor || '', codigos: parseCodigos(p.Codigos_E), max, asig, disp, ratio, tutorias };
+  });
+
+  // Filtrar
+  if (q) {
+    filas = filas.filter(f =>
+      f.nombre.toLowerCase().includes(q) ||
+      f.codigo.toLowerCase().includes(q) ||
+      f.codigos.some(c => c.toLowerCase().includes(q))
+    );
+  }
+
+  // Ordenar
+  if (sort === 'ratio-desc')  filas.sort((a, b) => b.ratio  - a.ratio  || b.asig - a.asig);
+  if (sort === 'ratio-asc')   filas.sort((a, b) => a.ratio  - b.ratio  || a.asig - b.asig);
+  if (sort === 'asig-desc')   filas.sort((a, b) => b.asig   - a.asig   || b.ratio - a.ratio);
+  if (sort === 'nombre-asc')  filas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+  if (!filas.length) {
+    cont.innerHTML = `<div class="empty-state"><div class="icon">🔍</div><p>Sin resultados para esa búsqueda</p></div>`;
+    return;
+  }
+
+  // Resumen rápido encima de la tabla
+  const al100 = filas.filter(f => f.ratio >= 100).length;
+  const sinAsig = filas.filter(f => f.asig === 0).length;
+  const mediaRatio = Math.round(filas.reduce((s, f) => s + f.ratio, 0) / filas.length);
+
+  let html = `
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:var(--azul-palido);border-radius:8px;font-size:0.83rem;">
+      <span><strong style="color:var(--azul)">${filas.length}</strong> <span style="color:var(--gris)">profesores</span></span>
+      <span style="color:var(--gris)">·</span>
+      <span><strong style="color:var(--verde)">${mediaRatio}%</strong> <span style="color:var(--gris)">ocupación media</span></span>
+      <span style="color:var(--gris)">·</span>
+      <span><strong style="color:var(--rojo)">${al100}</strong> <span style="color:var(--gris)">al 100%</span></span>
+      <span style="color:var(--gris)">·</span>
+      <span><strong style="color:var(--gris)">${sinAsig}</strong> <span style="color:var(--gris)">sin asignaciones</span></span>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th>Código</th>
+        <th>Profesor</th>
+        <th>Códigos E.</th>
+        <th style="text-align:center">Máx.</th>
+        <th style="text-align:center" data-tip="Tribunales como evaluador">Eval.</th>
+        <th style="text-align:center" data-tip="TFGs tutorizados — no resta capacidad">Tutoría</th>
+        <th style="text-align:center">Libres</th>
+        <th style="min-width:160px">Ocupación</th>
+      </tr></thead>
+      <tbody>`;
+
+  filas.forEach(f => {
+    const barColor = f.ratio >= 100 ? '#c0392b' : f.ratio >= 75 ? '#e67e22' : f.ratio >= 40 ? '#20639B' : '#8a9ab0';
+    const badgeClass = f.ratio >= 100 ? 'badge-red' : f.ratio >= 75 ? 'badge-orange' : f.ratio > 0 ? 'badge-blue' : 'badge-gray';
+    html += `<tr>
+      <td><span class="codigo-chip">${f.codigo}</span></td>
+      <td style="font-weight:500">${f.nombre}</td>
+      <td style="max-width:180px;">${f.codigos.slice(0,4).map(c=>`<span class="codigo-chip">${c}</span>`).join(' ')}${f.codigos.length>4?`<span style="color:var(--gris);font-size:0.75rem"> +${f.codigos.length-4}</span>`:''}</td>
+      <td style="text-align:center;color:var(--gris)">${f.max}</td>
+      <td style="text-align:center;font-weight:700;color:var(--azul-medio)">${f.asig}</td>
+      <td style="text-align:center;color:#B8972E;font-weight:600;">${f.tutorias > 0 ? f.tutorias : '—'}</td>
+      <td style="text-align:center;font-weight:600;color:${f.disp <= 0 ? 'var(--rojo)' : 'var(--verde)'}">${f.disp}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="prog-bar" style="flex:1;height:10px;border-radius:6px;">
+            <div class="prog-fill" style="width:${Math.min(f.ratio,100)}%;background:${barColor};border-radius:6px;"></div>
+          </div>
+          <span class="badge ${badgeClass}" style="flex-shrink:0;min-width:42px;justify-content:center;">${f.ratio}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  cont.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORTAR
+// ═══════════════════════════════════════════════════════
+function exportarExcel(data, filename) {
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+  XLSX.writeFile(wb, filename);
+}
+
+function exportarAsignaciones() {
+  if (!state.asignaciones.length) { toast('No hay asignaciones para exportar', 'error'); return; }
+  exportarExcel(state.asignaciones, 'asignaciones_tribunales.xlsx');
+  toast('Excel de asignaciones descargado', 'success');
+}
+
+function exportarWarnings() {
+  if (!state.warnings.length) { toast('No hay advertencias', 'info'); return; }
+  exportarExcel(state.warnings, 'advertencias_asignacion.xlsx');
+  toast('Excel de advertencias descargado', 'success');
+}
+
+function exportarProfesores() {
+  if (!state.profesores.length) { toast('No hay profesores para exportar', 'error'); return; }
+  exportarExcel(state.profesores, 'profesores_villanueva.xlsx');
+  toast('Excel de profesores descargado', 'success');
+}
+
+function exportarEstudiantes() {
+  if (!state.estudiantes.length) { toast('No hay restricciones para exportar', 'error'); return; }
+  const data = state.estudiantes.map(e => ({
+    TFG: e.TFG, Nombre: e.Nombre,
+    Dias_Bloqueados: (e.Dias_Bloqueados||[]).join(', '),
+    Horas_Bloqueadas: (e.Horas_Bloqueadas||[]).join(', '),
+  }));
+  exportarExcel(data, 'restricciones_estudiantes.xlsx');
+  toast('Exportado', 'success');
+}
+
+function exportarHorarios() {
+  if (!state.horarios.length) { toast('No hay horarios para exportar', 'error'); return; }
+
+  // Helper: obtener nombre del profesor por código
+  const getNombreProf = cod => {
+    const p = state.profesores.find(p2 => (p2.Codigo_Profesor||p2.Codigo||'').toUpperCase() === cod.toUpperCase());
+    if (p) return p.Profesor || cod;
+    const t = state.tfgs.find(t2 => (t2.Codigo_Profesor||'').toUpperCase() === cod.toUpperCase());
+    return t ? (t.Tutor || cod) : cod;
+  };
+
+  // Helper: obtener códigos temáticos del TFG
+  const getCodigosTema = tfgCod => {
+    const t = state.tfgs.find(t2 => (t2.TFG||'').toUpperCase() === tfgCod.toUpperCase());
+    return t ? (t.Codigos_Tema || '') : '';
+  };
+
+  const wb = XLSX.utils.book_new();
+
+  // ── HOJA 1: Formato calendario por Día → Turno → Salón (estilo Word) ──
+  const AZUL = '001F5B'; const AZUL_M = '004B8D'; const DORADO = 'B8972E';
+  const AZUL_C = 'E8F0F8'; const GOLD_C = 'FFF8E7'; const GREEN_C = 'E8F5E9';
+
+  // Agrupar: fecha → salon → lista de tribunales ordenada por hora
+  const grupos = {};
+  state.horarios.forEach(h => {
+    const fecha = h.Fecha || '';
+    const salon = h.Salon || '';
+    const key = fecha + '||' + salon;
+    if (!grupos[key]) grupos[key] = { fecha, salon, dia: h.Dia || fecha, items: [] };
+    grupos[key].items.push(h);
+  });
+  // Ordenar por fecha → salon → hora
+  const claves = Object.keys(grupos).sort((a, b) => {
+    const [fa, sa] = a.split('||'); const [fb, sb] = b.split('||');
+    return fa !== fb ? fa.localeCompare(fb) : sa.localeCompare(sb);
+  });
+  grupos[claves[0]]?.items.sort((a,b) => (a.SlotHora||a.Hora||'').localeCompare(b.SlotHora||b.Hora||''));
+
+  const ws1Data = [];
+  let fechaActual = null;
+
+  claves.forEach(clave => {
+    const g = grupos[clave];
+    g.items.sort((a,b) => (a.SlotHora||a.Hora||'').localeCompare(b.SlotHora||b.Hora||''));
+
+    // Cabecera de día (solo cuando cambia la fecha)
+    if (g.fecha !== fechaActual) {
+      fechaActual = g.fecha;
+      // Cabecera de día
+      const d2 = new Date(g.fecha + 'T12:00:00');
+      const diasSemana = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+      const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const diaLabel = `${diasSemana[d2.getDay()]} ${d2.getDate()} DE ${meses[d2.getMonth()].toUpperCase()} DE ${d2.getFullYear()}`;
+      ws1Data.push({ A: diaLabel, B: '', C: '', D: '', E: '', F: '', G: '' });
+      ws1Data.push({ A: '', B: '', C: '', D: '', E: '', F: '', G: '' }); // espacio
+    }
+
+    // Cabecera de salón
+    ws1Data.push({ A: `📍 ${g.salon}`, B: '', C: '', D: '', E: '', F: '', G: '' });
+    // Cabecera de columnas
+    ws1Data.push({ A: 'Horario', B: 'Código TFG', C: 'Título y Estudiante', D: 'Códigos Tema', E: 'Presidente', F: 'Vocal 1', G: 'Vocal 2 (Tutor)' });
+
+    g.items.forEach(h => {
+      ws1Data.push({
+        A: h.Hora || `${h.SlotHora}–${h.HoraFin}` || '',
+        B: h.TFG || '',
+        C: h.Tema_Estudiante || '',
+        D: getCodigosTema(h.TFG),
+        E: `${h.Presidente} · ${getNombreProf(h.Presidente)}`,
+        F: `${h.Vocal1} · ${getNombreProf(h.Vocal1)}`,
+        G: `${h.Vocal2} · ${getNombreProf(h.Vocal2)}`,
+      });
+    });
+    ws1Data.push({ A: '', B: '', C: '', D: '', E: '', F: '', G: '' }); // espacio
+  });
+
+  const ws1 = XLSX.utils.json_to_sheet(ws1Data, { header: ['A','B','C','D','E','F','G'], skipHeader: true });
+  ws1['!cols'] = [
+    { wch: 14 }, { wch: 10 }, { wch: 55 }, { wch: 20 },
+    { wch: 30 }, { wch: 30 }, { wch: 30 }
+  ];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Horario por Día y Salón');
+
+  // ── HOJA 2: Tabla plana completa ──
+  const ws2Data = state.horarios.map(h => ({
+    TFG:              h.TFG,
+    Estudiante:       h.Tema_Estudiante || '',
+    Codigos_Tema:     getCodigosTema(h.TFG),
+    Fecha:            h.Fecha || '',
+    Dia:              h.Dia || '',
+    Hora:             h.Hora || `${h.SlotHora}–${h.HoraFin}` || '',
+    Salon:            h.Salon || '',
+    Presidente_Cod:   h.Presidente,
+    Presidente_Nombre:getNombreProf(h.Presidente),
+    Vocal1_Cod:       h.Vocal1,
+    Vocal1_Nombre:    getNombreProf(h.Vocal1),
+    Vocal2_Cod:       h.Vocal2,
+    Vocal2_Nombre:    getNombreProf(h.Vocal2),
+  }));
+  const ws2 = XLSX.utils.json_to_sheet(ws2Data);
+  ws2['!cols'] = [
+    {wch:8},{wch:50},{wch:18},{wch:12},{wch:28},{wch:14},{wch:10},
+    {wch:12},{wch:28},{wch:12},{wch:28},{wch:12},{wch:28}
+  ];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Tabla Completa');
+
+  XLSX.writeFile(wb, 'Horario_Tribunales_TFG_2025-26.xlsx');
+  toast('Excel de horarios descargado (2 hojas)', 'success');
+}
+
+function exportarResumenProfs() {
+  const data = state.profesores.map(p => {
+    const max = parseInt(p.Tribunales_d)||0;
+    const asig = parseInt(p.Tribunales_Asignados)||0;
+    return {
+      Codigo: p.Codigo_Profesor||p.Codigo||'', Profesor: p.Profesor||'',
+      Tribunales_Max: max, Tribunales_Asignados: asig,
+      Horas_Disponibles: max-asig,
+      Ratio_Ocupacion_Pct: max > 0 ? Math.round(asig/max*100) : 0,
+    };
+  });
+  exportarExcel(data, 'resumen_profesores.xlsx');
+  toast('Resumen de profesores descargado', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// BACKUP
+// ═══════════════════════════════════════════════════════
+function exportBackup() {
+  const data = JSON.stringify({
+    version: '3.0',
+    fecha: new Date().toISOString(),
+    profesores: state.profesores,
+    estudiantes: state.estudiantes,
+    tfgs: state.tfgs,
+    asignaciones: state.asignaciones,
+    horarios: state.horarios,
+    warnings: state.warnings,
+    sesiones: state.sesiones,
+    incompatProfs: state.incompatProfs,
+    incompatEsts: state.incompatEsts,
+  }, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `backup_tribunales_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast('Backup descargado', 'success');
+}
+
+function importBackup(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (parsed.profesores) state.profesores = parsed.profesores;
+      if (parsed.estudiantes) state.estudiantes = parsed.estudiantes;
+      if (parsed.tfgs) state.tfgs = parsed.tfgs;
+      if (parsed.asignaciones) state.asignaciones = parsed.asignaciones;
+      if (parsed.horarios) state.horarios = parsed.horarios;
+      if (parsed.warnings) state.warnings = parsed.warnings;
+      if (parsed.sesiones) state.sesiones = parsed.sesiones;
+      if (parsed.incompatProfs) state.incompatProfs = parsed.incompatProfs;
+      if (parsed.incompatHoras) state.incompatHoras = parsed.incompatHoras;
+      if (parsed.incompatEsts) state.incompatEsts = parsed.incompatEsts;
+      saveState();
+      renderEstadoDatos(); renderTablaProfs(); renderTablaEstudiantes();
+      renderSesiones(); renderIncompatProfs(); renderIncompatEsts();
+      if (state.asignaciones.length) { renderTablaAsignaciones(); renderWarnings(); renderStats(); }
+      if (state.horarios.length) renderTablaHorarios();
+      saveState();
+      renderEstadoDatos();
+      renderTablaProfs();
+      renderTablaEstudiantes();
+      if (state.asignaciones.length) { renderTablaAsignaciones(); renderWarnings(); renderStats(); }
+      toast('✓ Backup restaurado correctamente', 'success');
+    } catch(err) { toast('Error al leer el backup', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════
+// CALENDARIO DE CONVOCATORIA
+// ═══════════════════════════════════════════════════════
+
+// ── helpers de tiempo ─────────────────────────────────────────────────
+function timeToMin(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+function minToTime(m) {
+  const h = Math.floor(m / 60).toString().padStart(2, '0');
+  const min = (m % 60).toString().padStart(2, '0');
+  return `${h}:${min}`;
+}
+function calcSlots(horaInicio, horaFin, durMin) {
+  // Devuelve array de strings HH:MM para cada slot que cabe en el bloque
+  const inicio = timeToMin(horaInicio);
+  const fin    = timeToMin(horaFin);
+  const slots  = [];
+  for (let t = inicio; t + durMin <= fin; t += durMin) {
+    slots.push(minToTime(t));
+  }
+  return slots;
+}
+
+function addSesion() {
+  const fecha     = document.getElementById('cal-fecha').value;
+  const horaInicio= document.getElementById('cal-hora-inicio').value;
+  const horaFin   = document.getElementById('cal-hora-fin').value;
+  const salonesStr= document.getElementById('cal-salones').value;
+  const duracion  = parseInt(document.getElementById('cal-duracion').value) || 45;
+
+  if (!fecha || !horaInicio || !horaFin) { toast('Indica fecha, hora de inicio y hora de fin', 'error'); return; }
+  if (timeToMin(horaFin) <= timeToMin(horaInicio)) { toast('La hora de fin debe ser posterior a la de inicio', 'error'); return; }
+
+  const salones = salonesStr.split(',').map(s => s.trim()).filter(Boolean);
+  if (!salones.length) { toast('Indica al menos un salón', 'error'); return; }
+
+  const slots = calcSlots(horaInicio, horaFin, duracion);
+  if (!slots.length) { toast('El bloque es demasiado corto para al menos un tribunal', 'error'); return; }
+
+  const id = `S${Date.now()}`;
+  const d  = new Date(fecha + 'T12:00:00');
+  const diasSemana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const label = `${diasSemana[d.getDay()]} ${d.getDate()} ${meses[d.getMonth()]} · ${horaInicio}–${horaFin}`;
+
+  state.sesiones.push({
+    id, fecha,
+    horaInicio, horaFin,
+    duracion,
+    salones,
+    slots,      // ['09:00','09:45','10:30',...]
+    label,
+    // Capacidad total = slots × salones
+    capacidad: slots.length * salones.length
+  });
+
+  saveState();
+  renderSesiones();
+  renderIncompatProfs();
+  renderIncompatEsts();
+  actualizarPreviewSlots();
+  toast(`Bloque añadido: ${label} — ${slots.length} turnos × ${salones.length} salón(es) = ${slots.length * salones.length} tribunales posibles`, 'success');
+}
+
+function actualizarPreviewSlots() {
+  const prev = document.getElementById('cal-preview-slots');
+  if (!prev) return;
+  const horaInicio = document.getElementById('cal-hora-inicio')?.value;
+  const horaFin    = document.getElementById('cal-hora-fin')?.value;
+  const dur        = parseInt(document.getElementById('cal-duracion')?.value) || 45;
+  const salonesStr = document.getElementById('cal-salones')?.value || '';
+  const salones    = salonesStr.split(',').filter(s => s.trim()).length || 1;
+  if (!horaInicio || !horaFin || timeToMin(horaFin) <= timeToMin(horaInicio)) { prev.textContent = ''; return; }
+  const n = calcSlots(horaInicio, horaFin, dur).length;
+  prev.textContent = `→ ${n} turnos × ${salones} salón(es) = ${n * salones} tribunales posibles`;
+}
+
+function eliminarSesion(id) {
+  state.sesiones = state.sesiones.filter(s => s.id !== id);
+  // Limpiar incompatibilidades de esa sesión
+  Object.keys(state.incompatProfs).forEach(k => {
+    state.incompatProfs[k] = state.incompatProfs[k].filter(sid => sid !== id);
+  });
+  Object.keys(state.incompatEsts).forEach(k => {
+    state.incompatEsts[k] = state.incompatEsts[k].filter(sid => sid !== id);
+  });
+  saveState();
+  renderSesiones();
+  renderIncompatProfs();
+  renderIncompatEsts();
+  toast('Sesión eliminada', 'warning');
+}
+
+function guardarCalendario() {
+  if (!state.sesiones.length) { toast('Añade al menos una sesión', 'error'); return; }
+  saveState();
+  renderIncompatProfs();
+  renderIncompatEsts();
+  toast(`✓ Calendario guardado — ${state.sesiones.length} sesiones`, 'success');
+}
+
+function renderSesiones() {
+  const cont = document.getElementById('sesiones-container');
+  if (!state.sesiones.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:24px;"><div class="icon" style="font-size:1.8rem;">📆</div><p>Añade bloques de defensa usando el formulario de arriba</p></div>`;
+    return;
+  }
+  const totalCap = state.sesiones.reduce((s, ses) => s + (ses.capacidad || (ses.slots||[ses.hora||'x']).length * (ses.salones||['A']).length), 0);
+  cont.innerHTML = `
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding:10px 14px;background:var(--azul-palido);border-radius:8px;font-size:0.83rem;">
+      <span><strong style="color:var(--azul)">${state.sesiones.length}</strong> <span style="color:var(--gris)">bloque(s)</span></span>
+      <span style="color:var(--gris)">·</span>
+      <span><strong style="color:var(--verde)">${totalCap}</strong> <span style="color:var(--gris)">tribunales posibles en total</span></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Bloque</th><th>Turnos</th><th>Salones</th><th>Capacidad</th><th style="text-align:right">Acción</th></tr></thead>
+        <tbody>
+          ${state.sesiones.map((s, i) => {
+            const nSlots   = s.slots ? s.slots.length : 1;
+            const nSalones = s.salones ? s.salones.length : 1;
+            const cap      = nSlots * nSalones;
+            const dur      = s.duracion || 45;
+            return `<tr>
+              <td><span class="codigo-chip">B${i+1}</span></td>
+              <td style="font-weight:500">${s.label}</td>
+              <td style="font-size:0.8rem;">
+                ${s.slots ? s.slots.map(t=>`<span class="badge badge-gold" style="font-size:0.72rem;margin:1px;">${t}</span>`).join(' ') : `<span class="badge badge-gold">${s.hora||s.horaInicio||'—'}</span>`}
+                <span style="color:var(--gris);font-size:0.75rem;margin-left:4px;">(${dur} min c/u)</span>
+              </td>
+              <td style="font-size:0.8rem;">${(s.salones||['—']).map(sa=>`<span class="badge badge-green" style="font-size:0.72rem;margin:1px;">${sa}</span>`).join(' ')}</td>
+              <td style="text-align:center;font-weight:700;color:var(--azul-medio)">${cap}</td>
+              <td style="text-align:right"><button class="btn btn-danger btn-xs" onclick="eliminarSesion('${s.id}')">✕</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// INCOMPATIBILIDADES — PROFESORES
+// ═══════════════════════════════════════════════════════
+
+function toggleIncompatProf(profCod, sesionId) {
+  if (!state.incompatProfs[profCod]) state.incompatProfs[profCod] = [];
+  const idx = state.incompatProfs[profCod].indexOf(sesionId);
+  if (idx >= 0) state.incompatProfs[profCod].splice(idx, 1);
+  else           state.incompatProfs[profCod].push(sesionId);
+  saveState();
+  const btn = document.getElementById(`incomp-prof-${profCod}-${sesionId}`);
+  if (btn) {
+    const bloq = state.incompatProfs[profCod].includes(sesionId);
+    btn.className = `btn btn-xs ${bloq ? 'btn-danger' : 'btn-secondary'}`;
+    btn.textContent = bloq ? '✕ Bloqueado' : '✓ Libre';
+  }
+  // Actualizar indicador de disponibilidad relativa
+  actualizarBadgeDisp(profCod);
+}
+
+function setIncompatHora(profCod, campo, valor) {
+  // campo: 'desde' | 'hasta'  valor: 'HH:MM' | ''
+  if (!state.incompatHoras[profCod]) state.incompatHoras[profCod] = { desde: '', hasta: '' };
+  state.incompatHoras[profCod][campo] = valor;
+  // Si ambos están vacíos, limpiar la entrada
+  if (!state.incompatHoras[profCod].desde && !state.incompatHoras[profCod].hasta) {
+    delete state.incompatHoras[profCod];
+  }
+  saveState();
+  actualizarBadgeDisp(profCod);
+}
+
+// Calcula ratio de disponibilidad real de un profesor:
+// (slots_compatibles / slots_totales) teniendo en cuenta
+// tanto bloques bloqueados como restricciones de hora
+function calcDispRatio(profCod) {
+  if (!state.sesiones.length) return 1;
+  let total = 0, disponibles = 0;
+  const bloques = state.incompatProfs[profCod] || [];
+  const horaRestr = state.incompatHoras[profCod] || {};
+  state.sesiones.forEach(ses => {
+    (ses.slots || [ses.horaInicio || '09:00']).forEach(slotHora => {
+      total++;
+      if (bloques.includes(ses.id)) return; // bloque completo bloqueado
+      if (horaRestr.desde && timeToMin(slotHora) < timeToMin(horaRestr.desde)) return;
+      if (horaRestr.hasta && timeToMin(slotHora) >= timeToMin(horaRestr.hasta)) return;
+      disponibles++;
+    });
+  });
+  return total > 0 ? disponibles / total : 1;
+}
+
+function actualizarBadgeDisp(profCod) {
+  const badge = document.getElementById(`disp-badge-${profCod}`);
+  if (!badge) return;
+  const ratio = calcDispRatio(profCod);
+  const pct = Math.round(ratio * 100);
+  const color = pct <= 20 ? 'var(--rojo)' : pct <= 50 ? 'var(--naranja)' : 'var(--verde)';
+  badge.textContent = `${pct}% disponible`;
+  badge.style.color = color;
+  badge.style.fontWeight = '600';
+}
+
+function getTodosLosProfesores() {
+  // Construye una lista unificada de todas las personas que van a estar
+  // en algún tribunal: evaluadores (Excel de profesores) + tutores (Excel de TFGs).
+  // Clave de deduplicación: Codigo_Profesor en mayúsculas.
+  const mapa = {}; // cod → { cod, nombre, rol }
+
+  // 1. Profesores del Excel de tribunales
+  state.profesores.forEach(p => {
+    const cod = (p.Codigo_Profesor || p.Codigo || '').toString().trim().toUpperCase();
+    if (!cod) return;
+    mapa[cod] = { cod, nombre: p.Profesor || cod, rol: 'evaluador' };
+  });
+
+  // 2. Tutores del Excel de TFGs (Vocal 2 en cada tribunal)
+  //    Pueden no estar en el Excel de profesores si su contrato no incluye tribunales.
+  state.tfgs.forEach(t => {
+    const cod    = (t.Codigo_Profesor || '').toString().trim().toUpperCase();
+    const nombre = (t.Tutor || '').toString().trim();
+    if (!cod) return;
+    if (mapa[cod]) {
+      // Ya existe → asegurarse de que el nombre esté completo
+      if (!mapa[cod].nombre || mapa[cod].nombre === cod) mapa[cod].nombre = nombre;
+      if (mapa[cod].rol === 'evaluador') mapa[cod].rol = 'evaluador+tutor';
+    } else {
+      mapa[cod] = { cod, nombre, rol: 'tutor' };
+    }
+  });
+
+  return Object.values(mapa).sort((a, b) => a.nombre.localeCompare(b.nombre));
+}
+
+function renderIncompatProfs() {
+  const cont = document.getElementById('incompat-profs-container');
+  if (!state.sesiones.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:20px;"><p>Guarda el calendario primero (Paso 1)</p></div>`;
+    return;
+  }
+
+  const todos = getTodosLosProfesores();
+  if (!todos.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:20px;"><p>Carga el archivo de TFGs y/o profesores en la pestaña Asignación</p></div>`;
+    return;
+  }
+
+  const q = (document.getElementById('search-incompat-prof')?.value || '').toLowerCase();
+  const filtrados = todos.filter(p =>
+    !q || p.nombre.toLowerCase().includes(q) || p.cod.toLowerCase().includes(q)
+  );
+
+  // Badge de rol
+  const rolBadge = rol => {
+    if (rol === 'evaluador+tutor') return `<span class="badge badge-blue" style="font-size:0.7rem;margin-left:6px;">Evaluador · Tutor</span>`;
+    if (rol === 'tutor')           return `<span class="badge badge-gold" style="font-size:0.7rem;margin-left:6px;">Solo tutor</span>`;
+    return `<span class="badge badge-gray" style="font-size:0.7rem;margin-left:6px;">Evaluador</span>`;
+  };
+
+  let html = `
+    <div style="font-size:0.78rem;color:var(--gris);padding:6px 12px 10px;border-bottom:1px solid var(--azul-palido);">
+      ${filtrados.length} persona(s) —
+      <span class="badge badge-blue" style="font-size:0.68rem;">Evaluador · Tutor</span> asiste en ambos roles ·
+      <span class="badge badge-gold" style="font-size:0.68rem;">Solo tutor</span> solo acompaña sus TFGs
+    </div>`;
+
+  filtrados.forEach(p => {
+    const incompat   = state.incompatProfs[p.cod] || [];
+    const horaRestr  = state.incompatHoras[p.cod] || {};
+    const nIncompat  = incompat.length;
+    const ratio      = calcDispRatio(p.cod);
+    const pct        = Math.round(ratio * 100);
+    const dispColor  = pct <= 20 ? 'var(--rojo)' : pct <= 50 ? 'var(--naranja)' : 'var(--verde)';
+    const tieneHora  = horaRestr.desde || horaRestr.hasta;
+
+    html += `
+      <div style="padding:10px 12px;border-bottom:1px solid var(--azul-palido);">
+        <!-- Cabecera: nombre + badges -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px;">
+          <span style="font-weight:600;font-size:0.88rem;">
+            <span class="codigo-chip" style="margin-right:6px;">${p.cod}</span>${p.nombre}${rolBadge(p.rol)}
+          </span>
+          <span style="display:flex;gap:6px;align-items:center;">
+            <span id="disp-badge-${p.cod}" style="font-size:0.75rem;color:${dispColor};font-weight:600;">${pct}% disponible</span>
+            <span class="badge ${nIncompat > 0 ? 'badge-orange' : 'badge-green'}" style="font-size:0.7rem;">
+              ${nIncompat > 0 ? nIncompat + ' bloque' + (nIncompat > 1 ? 's' : '') + ' bloqueado' + (nIncompat > 1 ? 's' : '') : 'Sin bloqueos'}
+            </span>
+          </span>
+        </div>
+
+        <!-- Modo 1: bloquear bloques completos -->
+        <div style="margin-bottom:8px;">
+          <div style="font-size:0.75rem;color:var(--gris);margin-bottom:4px;font-weight:600;">🔴 Bloquear bloque completo:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;">
+            ${state.sesiones.map(s => {
+              const bloq = incompat.includes(s.id);
+              return `<button id="incomp-prof-${p.cod}-${s.id}"
+                class="btn btn-xs ${bloq ? 'btn-danger' : 'btn-secondary'}"
+                onclick="toggleIncompatProf('${p.cod}','${s.id}')"
+                style="font-size:0.72rem;">
+                ${bloq ? '✕' : '✓'} ${s.label}
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Modo 2: restricción por hora (desde / hasta) -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:0.75rem;color:var(--gris);font-weight:600;">🕐 Solo puede:</span>
+          <label style="font-size:0.78rem;color:var(--texto);display:flex;align-items:center;gap:4px;">
+            Desde
+            <input type="time" value="${horaRestr.desde||''}"
+              style="font-size:0.78rem;padding:2px 6px;border:1px solid var(--azul-palido);border-radius:6px;width:88px;"
+              onchange="setIncompatHora('${p.cod}','desde',this.value)">
+          </label>
+          <label style="font-size:0.78rem;color:var(--texto);display:flex;align-items:center;gap:4px;">
+            Hasta
+            <input type="time" value="${horaRestr.hasta||''}"
+              style="font-size:0.78rem;padding:2px 6px;border:1px solid var(--azul-palido);border-radius:6px;width:88px;"
+              onchange="setIncompatHora('${p.cod}','hasta',this.value)">
+          </label>
+          ${tieneHora ? `<button class="btn btn-xs btn-secondary" onclick="setIncompatHora('${p.cod}','desde','');setIncompatHora('${p.cod}','hasta','');renderIncompatProfs();" style="font-size:0.72rem;">✕ Quitar</button>` : ''}
+          ${tieneHora ? `<span style="font-size:0.72rem;color:var(--dorado);font-weight:600;">⚠ Restricción horaria activa</span>` : ''}
+        </div>
+      </div>`;
+  });
+  cont.innerHTML = html || `<div class="empty-state" style="padding:20px;"><p>No hay coincidencias</p></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// INCOMPATIBILIDADES — ESTUDIANTES
+// ═══════════════════════════════════════════════════════
+
+function toggleIncompatEst(tfgCod, sesionId) {
+  if (!state.incompatEsts[tfgCod]) state.incompatEsts[tfgCod] = [];
+  const idx = state.incompatEsts[tfgCod].indexOf(sesionId);
+  if (idx >= 0) state.incompatEsts[tfgCod].splice(idx, 1);
+  else           state.incompatEsts[tfgCod].push(sesionId);
+  saveState();
+  const btn = document.getElementById(`incomp-est-${tfgCod}-${sesionId}`);
+  if (btn) {
+    const bloq = state.incompatEsts[tfgCod].includes(sesionId);
+    btn.className = `btn btn-xs ${bloq ? 'btn-danger' : 'btn-secondary'}`;
+    btn.textContent = (bloq ? '✕' : '✓') + ' ' + state.sesiones.find(s=>s.id===sesionId)?.label;
+  }
+}
+
+function renderIncompatEsts() {
+  const cont = document.getElementById('incompat-ests-container');
+  if (!state.sesiones.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:20px;"><p>Guarda el calendario primero (Paso 1)</p></div>`;
+    return;
+  }
+  if (!state.tfgs.length) {
+    cont.innerHTML = `<div class="empty-state" style="padding:20px;"><p>Carga el archivo de TFGs en Asignación</p></div>`;
+    return;
+  }
+
+  const q = (document.getElementById('search-incompat-est')?.value || '').toLowerCase();
+  const tfgs = state.tfgs.filter(t =>
+    !q || (t.TFG||'').toLowerCase().includes(q) ||
+    ((t.Nombre_Estudiante||'')+(t.Apellido_Estudiante||'')).toLowerCase().includes(q)
+  );
+
+  let html = '';
+  tfgs.forEach(t => {
+    const cod = (t.TFG || '').toString().trim().toUpperCase();
+    const nombre = `${t.Nombre_Estudiante||''} ${t.Apellido_Estudiante||''}`.trim();
+    const incompat = state.incompatEsts[cod] || [];
+    const nIncompat = incompat.length;
+    html += `
+      <div style="padding:10px 12px;border-bottom:1px solid var(--azul-palido);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-weight:600;font-size:0.88rem;"><span class="codigo-chip" style="margin-right:6px;">${cod}</span>${nombre}</span>
+          <span class="badge ${nIncompat > 0 ? 'badge-orange' : 'badge-green'}">${nIncompat > 0 ? nIncompat+' bloqueada'+(nIncompat>1?'s':'') : 'Libre'}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${state.sesiones.map(s => {
+            const bloq = incompat.includes(s.id);
+            return `<button id="incomp-est-${cod}-${s.id}"
+              class="btn btn-xs ${bloq ? 'btn-danger' : 'btn-secondary'}"
+              onclick="toggleIncompatEst('${cod}','${s.id}')"
+              style="font-size:0.74rem;">
+              ${bloq ? '✕' : '✓'} ${s.label}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>`;
+  });
+  cont.innerHTML = html || `<div class="empty-state" style="padding:20px;"><p>No hay coincidencias</p></div>`;
+}
+
+
+// ═══════════════════════════════════════════════════════
+// TABLA TFGs (pestaña Datos)
+// ═══════════════════════════════════════════════════════
+function renderTablaTFGs() {
+  const cont = document.getElementById('tabla-tfgs-container');
+  if (!cont) return;
+  if (!state.tfgs.length) {
+    cont.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>Carga el Excel para ver los TFGs</p></div>';
+    return;
+  }
+  const q = (document.getElementById('search-tfgs') ? document.getElementById('search-tfgs').value : '').toLowerCase();
+  const filtrados = state.tfgs.filter(function(t) {
+    return !q ||
+      (t.TFG||'').toLowerCase().includes(q) ||
+      ((t.Nombre_Estudiante||'')+(t.Apellido_Estudiante||'')).toLowerCase().includes(q) ||
+      (t.Tema||'').toLowerCase().includes(q) ||
+      (t.Codigos_Tema||'').toLowerCase().includes(q) ||
+      (t.Tutor||'').toLowerCase().includes(q);
+  });
+
+  var rows = '';
+  filtrados.forEach(function(t, i) {
+    var bgStyle = i % 2 !== 0 ? ' style="background:var(--gris-claro)"' : '';
+    var nombre = ((t.Nombre_Estudiante||'') + ' ' + (t.Apellido_Estudiante||'')).trim();
+    var cods = (t.Codigos_Tema||'').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var codsHtml = cods.slice(0,5).map(function(c){
+      return '<span class="codigo-chip" style="font-size:0.72rem;margin:1px;">' + c + '</span>';
+    }).join('');
+    if (cods.length > 5) codsHtml += '<span style="color:var(--gris);font-size:0.72rem;">+' + (cods.length-5) + '</span>';
+    var realTFGIdx = state.tfgs.indexOf(t);
+    rows += '<tr' + bgStyle + '>' +
+      '<td><span class="codigo-chip">' + (t.TFG||'') + '</span></td>' +
+      '<td style="font-size:0.85rem;white-space:nowrap;">' + nombre + '</td>' +
+      '<td style="font-size:0.82rem;">' +
+        '<span class="codigo-chip" style="margin-right:4px;">' + (t.Codigo_Profesor||'?') + '</span>' +
+        '<span style="color:var(--gris);font-size:0.78rem;">' + (t.Tutor||'') + '</span>' +
+      '</td>' +
+      '<td style="font-size:0.82rem;line-height:1.4;">' + (t.Tema||'') + '</td>' +
+      '<td style="white-space:nowrap;">' + codsHtml + '</td>' +
+      '<td style="text-align:right;white-space:nowrap;">' +
+        '<button class="btn btn-secondary btn-xs" onclick="abrirModalTFG(' + realTFGIdx + ')">✏ Editar</button>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  cont.innerHTML =
+    '<div style="font-size:0.8rem;color:var(--gris);padding:6px 12px 10px;border-bottom:1px solid var(--azul-palido);">' +
+      filtrados.length + ' TFG(s) mostrado(s)</div>' +
+    '<div class="table-wrap"><table>' +
+    '<thead><tr><th>TFG</th><th>Estudiante</th><th>Tutor (Vocal 2)</th>' +
+    '<th style="min-width:320px">Título del TFG</th><th>Códigos Temáticos</th><th style="text-align:right">Editar</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody></table></div>';
+}
+
+window.addEventListener('click', e => {
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    if (e.target === m) m.classList.remove('open');
+  });
+});
+
+loadState();
+renderEstadoDatos();
+renderTablaTFGs();
+renderTablaProfs();
+renderTablaEstudiantes();
+if (state.asignaciones.length) {
+  renderTablaAsignaciones();
+  renderWarnings();
+  renderStats();
+}
+renderSesiones();
+renderIncompatProfs();
+renderIncompatEsts();
+if (state.horarios.length) renderTablaHorarios();
+
+// Preview en tiempo real al cambiar campos del formulario de sesión
+['cal-hora-inicio','cal-hora-fin','cal-duracion','cal-salones'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', actualizarPreviewSlots);
+});
+actualizarPreviewSlots();
+</script>
+</body>
+</html>
